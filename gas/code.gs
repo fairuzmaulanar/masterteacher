@@ -106,6 +106,31 @@
           if (!teacherId) return createJsonResponse({ status: 'error', message: 'Parameter teacherId wajib diisi.' });
           return handleGetTeacherData(teacherId);
 
+        case 'saveTeacherProfile':
+        case 'registerTeacher':
+          var teacherObj = null;
+          if (params.teacherJson) {
+            try { teacherObj = JSON.parse(params.teacherJson); } catch(pe) {}
+          }
+          if (!teacherObj) {
+            teacherObj = {
+              id: params.id || params.teacherId || ('GURU-' + Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyyyMM') + '-' + Date.now().toString(36).toUpperCase()),
+              namaLengkap: params.nama || params.namaLengkap || 'Guru Pengajar',
+              email: (params.email || 'guru@sekolah.id').trim().toLowerCase(),
+              nip: params.nip || '-',
+              mataPelajaran: params.mapel || params.mataPelajaran || 'Guru Mata Pelajaran',
+              namaSekolah: params.sekolah || params.namaSekolah || 'Sekolah',
+              alamatSekolah: params.alamat || 'Jl. Pendidikan Karakter Bangsa No. 45',
+              teleponSekolah: params.telp || '(021) 7890123',
+              emailSekolah: params.emailSekolah || 'tatausaha@sekolah.sch.id',
+              websiteSekolah: params.website || '',
+              namaKepalaSekolah: params.kepsek || 'Dr. H. Bambang Sudarsono, M.Pd.',
+              nipKepalaSekolah: params.nipKepalaSekolah || '19760415 200212 1 003',
+              password: params.password || params.pin || '1234'
+            };
+          }
+          return handleSaveTeacherProfile(teacherObj);
+
         default:
           return createJsonResponse({
             status: 'error',

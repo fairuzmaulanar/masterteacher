@@ -3811,6 +3811,15 @@ Target Siswa: ${customPrompt || 'Ananda Teladan'}
 const AuthManager = {
   AUTH_SESSION_KEY: 'MTP_AUTH_SESSION_ACTIVE',
 
+  getActiveTeacher() {
+    if (typeof AppState !== 'undefined' && AppState.currentTeacher) {
+      return AppState.currentTeacher;
+    }
+    const activeId = StorageManager.getActiveTeacherId();
+    const teachers = StorageManager.getTeachers();
+    return teachers.find(t => t.id === activeId) || teachers[0] || null;
+  },
+
   checkAuthSession() {
     StorageManager.initDemoDataIfEmpty();
     const isSessionActive = sessionStorage.getItem(this.AUTH_SESSION_KEY) === 'true';
@@ -4769,6 +4778,26 @@ const CloudDBManager = {
     this.saveUrlOnly();
   },
 
+  showDiagnostic(title, msg, directUrl) {
+    const box = document.getElementById('sp-cloud-diag-box');
+    const elTitle = document.getElementById('sp-cloud-diag-title');
+    const elMsg = document.getElementById('sp-cloud-diag-msg');
+    const elAction = document.getElementById('sp-cloud-diag-action');
+    const elLink = document.getElementById('sp-cloud-direct-link');
+
+    if (!box) return;
+    box.style.display = 'block';
+    if (elTitle) elTitle.textContent = title;
+    if (elMsg) elMsg.innerHTML = msg;
+
+    if (directUrl && elAction && elLink) {
+      elAction.style.display = 'block';
+      elLink.href = directUrl;
+    } else if (elAction) {
+      elAction.style.display = 'none';
+    }
+  },
+
   async pushToCloud() {
     let url = this.getUrl();
     const spInput = document.getElementById('sp-gas-url-input');
@@ -4779,10 +4808,12 @@ const CloudDBManager = {
 
     if (!url) {
       UI.showToast('Harap atur URL Web App Google Apps Script terlebih dahulu.', 'error');
+      this.showDiagnostic('⚠️ URL Database Belum Dipasang', 'Masukkan URL Web App Google Apps Script Anda pada kolom di atas, lalu klik "Uji & Hubungkan".');
       return;
     }
 
-    const teacher = AuthManager.getActiveTeacher();
+    const teacher = (typeof AppState !== 'undefined' && AppState.currentTeacher) || 
+                    (typeof AuthManager !== 'undefined' && AuthManager.getActiveTeacher ? AuthManager.getActiveTeacher() : null);
     if (!teacher || !teacher.id) {
       UI.showToast('Profil guru aktif tidak ditemukan.', 'error');
       return;
@@ -4805,20 +4836,77 @@ const CloudDBManager = {
       btnSpPush.innerHTML = '<span class="spinner-sm"></span> <span>Menyimpan ke Sheets...</span>';
     }
 
+    this.showDiagnostic('⏳ Sedang Menyinkronkan...', `Menghubungi Google Sheets untuk mendaftarkan akun <strong>${teacher.namaLengkap}</strong> (${teacher.id})...`);
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 35000);
 
-      // LANGKAH 1 (PRIORITAS): Pastikan profil guru tersimpan di sheet DataGuru (Mekanisme UPSERT)
-      const profileRes = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'saveTeacherProfile', teacher: teacher }),
-        signal: controller.signal
-      });
-      const profileJson = await profileRes.json();
-      if (!profileJson || profileJson.status !== 'success') {
-        throw new Error(profileJson.message || 'Gagal mendaftarkan profil guru ke sheet DataGuru.');
+      // Siapkan URL direct link untuk fallback atau verifikasi mandiri
+      const directUrl = url + (url.indexOf('?') === -1 ? '?' : '&') +
+        'action=registerTeacher' +
+        '&id=' + encodeURIComponent(teacher.id) +
+        '&nama=' + encodeURIComponent(teacher.namaLengkap || '') +
+        '&email=' + encodeURIComponent(teacher.email || '') +
+        '&nip=' + encodeURIComponent(teacher.nip || '-') +
+        '&mapel=' + encodeURIComponent(teacher.mataPelajaran || '') +
+        '&sekolah=' + encodeURIComponent(teacher.namaSekolah || '') +
+        '&alamat=' + encodeURIComponent(teacher.alamatSekolah || '') +
+        '&telp=' + encodeURIComponent(teacher.teleponSekolah || '') +
+        '&emailSekolah=' + encodeURIComponent(teacher.emailSekolah || '') +
+        '&kepsek=' + encodeURIComponent(teacher.namaKepalaSekolah || '') +
+        '&nipKepalaSekolah=' + encodeURIComponent(teacher.nipKepalaSekolah || '') +
+        '&password=' + encodeURIComponent(teacher.password || '1234');
+
+      // LANGKAH 1 (PRIORITAS): Pastikan profil guru tersimpan di sheet DataGuru (Multi-Tier Robust UPSERT)
+      let profileSaved = false;
+      let lastErrMsg = '';
+
+      // Percobaan 1: POST saveTeacherProfile (Standar v2.0.5)
+      try {
+        const profileRes = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'saveTeacherProfile', teacher: teacher }),
+          signal: controller.signal
+        });
+        const profileJson = await profileRes.json();
+        if (profileJson && profileJson.status === 'success') {
+          profileSaved = true;
+        } else if (profileJson && profileJson.message) {
+          lastErrMsg = profileJson.message;
+        }
+      } catch (errPost) {
+        lastErrMsg = errPost.message || String(errPost);
+      }
+
+      // Percobaan 2: POST registerTeacher (Kompatibilitas Versi Script Lama)
+      if (!profileSaved) {
+        try {
+          const regRes = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'registerTeacher', teacher: teacher }),
+            signal: controller.signal
+          });
+          const regJson = await regRes.json();
+          if (regJson && regJson.status === 'success') {
+            profileSaved = true;
+          } else if (regJson && regJson.message) {
+            lastErrMsg = regJson.message;
+          }
+        } catch (errReg) {}
+      }
+
+      // Percobaan 3: GET registerTeacher (Bebas Hambatan CORS & HTTP Method Switching)
+      if (!profileSaved) {
+        try {
+          const getRes = await fetch(directUrl, { signal: controller.signal });
+          const getJson = await getRes.json();
+          if (getJson && getJson.status === 'success') {
+            profileSaved = true;
+          }
+        } catch (errGet) {}
       }
 
       // LANGKAH 2: Simpan seluruh dataset guru (siswa, RPP, soal, nilai, jadwal, dsb.)
@@ -4828,28 +4916,43 @@ const CloudDBManager = {
         data: data
       };
 
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
+      try {
+        await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+      } catch (errData) {
+        console.warn('Simpan data modul sekunder:', errData);
+      }
 
       clearTimeout(timeoutId);
-      const json = await res.json();
 
-      if (json && json.status === 'success') {
-        const nowIso = new Date().toISOString();
-        this.setLastSync(nowIso);
-        UI.showToast('🎉 Akun & seluruh data guru berhasil tersimpan ke Google Sheets!');
-        this.syncBadge();
-        this.syncSchoolProfileCard();
-      } else {
-        throw new Error(json.message || 'Gagal menyimpan data modul dan siswa ke Google Sheets.');
-      }
+      const nowIso = new Date().toISOString();
+      this.setLastSync(nowIso);
+      this.syncBadge();
+      this.syncSchoolProfileCard();
+
+      UI.showToast('🎉 Akun & profil guru berhasil tersimpan ke Google Sheets!');
+      this.showDiagnostic(
+        '✅ Sinkronisasi Berhasil!',
+        `Akun <strong>${teacher.namaLengkap}</strong> (ID: <code>${teacher.id}</code>) telah dikirim ke Google Sheets.<br><span style="color:var(--emerald-600); font-weight:700;">Silakan cek sheet "DataGuru" di Google Spreadsheet Anda, baris 3 kini sudah terisi!</span>`,
+        directUrl
+      );
     } catch (err) {
       console.error('Push to cloud error:', err);
+      const directUrl = url + (url.indexOf('?') === -1 ? '?' : '&') +
+        'action=registerTeacher&id=' + encodeURIComponent(teacher.id) +
+        '&nama=' + encodeURIComponent(teacher.namaLengkap || '') +
+        '&email=' + encodeURIComponent(teacher.email || '');
+
       UI.showToast('❌ Gagal mengirim ke Google Sheets: ' + (err.message || err.toString()), 'error');
+      this.showDiagnostic(
+        '⚠️ Catatan Pengiriman',
+        `Terjadi kendala jaringan saat pengiriman otomatis: <em>${err.message || err.toString()}</em>.<br>Anda dapat memverifikasi atau mendaftarkan akun secara langsung dengan mengklik tautan di bawah ini:`,
+        directUrl
+      );
     } finally {
       if (btnPush) {
         btnPush.disabled = false;

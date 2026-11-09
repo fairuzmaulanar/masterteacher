@@ -225,3 +225,9 @@ ZONA BAWAH: MASTER CONTEXT & LOGIKA SISTEM TERKINI (LIVING CONTEXT)
     - **Prioritisasi Pengiriman Profil di Frontend (`app.js`):** Memperbaiki fungsi `pushToCloud()` agar selalu mendaftarkan dan memverifikasi penyimpanan akun guru di sheet `DataGuru` terlebih dahulu sebelum mengirimkan data turunan (siswa, RPP, soal, jadwal).
     - **Otomasi Pemulihan URL:** Jika URL Web App dimasukkan di form Sekolah & Logo, sistem secara cerdas menyimpannya dan menginisialisasi sinkronisasi langsung saat tombol simpan ditekan.
     - **Kompilasi Standalone & Bump PWA Cache:** Menjalankan `build-standalone.ps1` dan menaikkan versi Service Worker ke `mtp-cache-v2.0.5`.
+  * [v2.0.6] Perbaikan Multi-Tier Fallback Cloud Sync, GET Support di Apps Script & Kotak Diagnostik Langsung:
+    - **Definisi `AuthManager.getActiveTeacher()` di `app.js`:** Memperbaiki bug kritis `TypeError: AuthManager.getActiveTeacher is not a function` yang sebelumnya memutus alur `pushToCloud()` sebelum permintaan terkirim ke jaringan.
+    - **Tri-Tier Fallback Sinkronisasi di `app.js`:** Mekanisme pengiriman tiga lapis: (1) POST `saveTeacherProfile`, (2) POST `registerTeacher` untuk kompatibilitas skrip lama, (3) GET `registerTeacher` sebagai benteng kebal blokir CORS browser.
+    - **Dukungan GET Pendaftaran Guru di `gas/code.gs`:** Menambahkan penanganan `action=registerTeacher` dan `action=saveTeacherProfile` di dalam fungsi `doGet(e)` sehingga pendaftaran profil guru dapat diuji coba dan dieksekusi langsung via peramban tab baru secara instan.
+    - **Kotak Diagnostik Langsung (`views/school-profile.html`):** Menyediakan tampilan status real-time dan tautan verifikasi mandiri 1-klik di bawah Card 5 Profil Sekolah.
+    - **Kompilasi Standalone & Bump PWA Cache:** Re-kompilasi `templates.js` dan menaikkan versi cache ke `mtp-cache-v2.0.6`.

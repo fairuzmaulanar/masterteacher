@@ -4770,7 +4770,13 @@ const CloudDBManager = {
   },
 
   async pushToCloud() {
-    const url = this.getUrl();
+    let url = this.getUrl();
+    const spInput = document.getElementById('sp-gas-url-input');
+    if (!url && spInput && spInput.value.trim()) {
+      url = spInput.value.trim();
+      this.setUrl(url);
+    }
+
     if (!url) {
       UI.showToast('Harap atur URL Web App Google Apps Script terlebih dahulu.', 'error');
       return;
@@ -4789,15 +4795,33 @@ const CloudDBManager = {
     }
 
     const btnPush = document.getElementById('btn-cloud-push');
+    const btnSpPush = document.getElementById('btn-sp-push-cloud');
     if (btnPush) {
       btnPush.disabled = true;
       btnPush.innerHTML = '<span class="spinner-sm"></span> <span>Mengirim data ke Google Sheets...</span>';
+    }
+    if (btnSpPush) {
+      btnSpPush.disabled = true;
+      btnSpPush.innerHTML = '<span class="spinner-sm"></span> <span>Menyimpan ke Sheets...</span>';
     }
 
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 35000);
 
+      // LANGKAH 1 (PRIORITAS): Pastikan profil guru tersimpan di sheet DataGuru (Mekanisme UPSERT)
+      const profileRes = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'saveTeacherProfile', teacher: teacher }),
+        signal: controller.signal
+      });
+      const profileJson = await profileRes.json();
+      if (!profileJson || profileJson.status !== 'success') {
+        throw new Error(profileJson.message || 'Gagal mendaftarkan profil guru ke sheet DataGuru.');
+      }
+
+      // LANGKAH 2: Simpan seluruh dataset guru (siswa, RPP, soal, nilai, jadwal, dsb.)
       const payload = {
         action: 'saveTeacherData',
         teacherId: teacher.id,
@@ -4811,25 +4835,17 @@ const CloudDBManager = {
         signal: controller.signal
       });
 
-      // Juga sinkronkan profil guru
-      try {
-        await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'saveTeacherProfile', teacher: teacher })
-        });
-      } catch (pe) {}
-
       clearTimeout(timeoutId);
       const json = await res.json();
 
       if (json && json.status === 'success') {
         const nowIso = new Date().toISOString();
         this.setLastSync(nowIso);
-        UI.showToast('🎉 Seluruh data berhasil tersimpan ke Google Sheets!');
+        UI.showToast('🎉 Akun & seluruh data guru berhasil tersimpan ke Google Sheets!');
         this.syncBadge();
+        this.syncSchoolProfileCard();
       } else {
-        throw new Error(json.message || 'Gagal menyimpan ke Google Sheets.');
+        throw new Error(json.message || 'Gagal menyimpan data modul dan siswa ke Google Sheets.');
       }
     } catch (err) {
       console.error('Push to cloud error:', err);
@@ -4838,6 +4854,10 @@ const CloudDBManager = {
       if (btnPush) {
         btnPush.disabled = false;
         btnPush.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg> <span>Kirim Seluruh Data Lokal ke Google Sheets</span>';
+      }
+      if (btnSpPush) {
+        btnSpPush.disabled = false;
+        btnSpPush.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> <span>Simpan &amp; Kirim ke Google Sheets</span>';
       }
     }
   },
@@ -4947,12 +4967,13 @@ const CloudDBManager = {
     if (!url || !teacher || !teacher.id) return;
 
     try {
-      // 1. Catat akun guru ke Sheet DataGuru
-      await fetch(url, {
+      // 1. Catat akun guru ke Sheet DataGuru (menggunakan UPSERT saveTeacherProfile)
+      const resProfile = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'registerTeacher', teacher: teacher })
+        body: JSON.stringify({ action: 'saveTeacherProfile', teacher: teacher })
       });
+      const jsonProfile = await resProfile.json();
 
       // 2. Inisialisasi lembar kerja guru baru di database cloud
       if (data) {
@@ -4966,6 +4987,7 @@ const CloudDBManager = {
       this.setLastSync(new Date().toISOString());
       this.syncBadge();
       console.log('Guru baru berhasil didaftarkan dan disinkronkan ke Cloud Google Sheets.');
+      UI.showToast('☁️ Akun guru berhasil didaftarkan ke Google Sheets!');
     } catch (err) {
       console.warn('Gagal mendaftarkan guru ke cloud database secara langsung:', err);
     }

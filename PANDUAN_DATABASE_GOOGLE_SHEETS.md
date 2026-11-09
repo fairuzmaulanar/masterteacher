@@ -97,11 +97,25 @@ Agar aplikasi Master Teacher Planner dapat mengirim dan menerima data dari sprea
 
 ## TAHAP 6: MENGHUBUNGKAN URL KE APLIKASI MASTER TEACHER PLANNER
 
-1. Buka aplikasi Master Teacher Planner di browser Anda (`http://localhost:8080/` atau versi PWA Anda).
-2. Klik menu **Database Google Sheets** pada sidebar kiri (atau klik tombol **Cloud Sheets** pada bilah atas).
-3. Tempelkan URL Web App yang telah Anda salin pada kolom **URL Web App Google Apps Script**.
-4. Klik tombol **[🧪 Uji Koneksi Database]** &rarr; Status akan berubah menjadi hijau *"Terhubung (Online)"*.
-5. Klik **[☁️ Kirim Data ke Google Sheets]** untuk menyinkronkan data lokal Anda ke awan, atau **[⬇️ Ambil Data dari Google Sheets]** untuk mengunduh data dari spreadsheet ke perangkat Anda.
+1. Buka aplikasi Master Teacher Planner di peramban Anda ([http://localhost:8080/](http://localhost:8080/) atau link Vercel Anda).
+2. Klik tombol **[ 🏢 Sekolah & Logo ]** di bilah atas aplikasi (atau di sidebar).
+3. Gulir ke bagian paling bawah ke **Card 5: Koneksi Database Google Sheets (Cloud Sync)**.
+4. Tempelkan URL Web App yang telah Anda salin pada kolom **URL Web App Google Apps Script**.
+5. Klik tombol **[ ⚡ Uji & Hubungkan ]** &rarr; Sistem akan memverifikasi koneksi ke spreadsheet Anda (badge status berubah menjadi hijau *"Terhubung"*).
+6. Klik tombol hijau **[ ☁️ Simpan & Kirim ke Google Sheets ]**:
+   * Akun guru aktif Anda (misalnya **Maulana Hani, S.Pd**) akan langsung **otomatis didaftarkan ke sheet `DataGuru` (baris baru)**!
+   * Seluruh data perangkat ajar, siswa, RPP, dan kelas Anda akan otomatis tersinkronisasi ke Google Spreadsheet.
+
+---
+
+## 💡 TIPS PENTING JIKA SUDAH PERNAH DEPLOY SEBELUMNYA:
+Jika Anda sebelumnya sudah pernah melakukan Deploy di Google Apps Script:
+1. Buka Apps Script, buka file `Code.gs`.
+2. Salin isi terbaru dari berkas [`gas/code.gs`](file:///c:/Users/lenovo/.gemini/antigravity-ide/MasterTeacherPlanner/gas/code.gs) dan timpa file `Code.gs` di Apps Script Anda. Klik ikon disket **Simpan**.
+3. Di pojok kanan atas Apps Script, klik **Deploy** &rarr; **Manage deployments** (*Kelola penerapan*).
+4. Klik ikon pensil ✏️ (*Edit*) di kanan atas dialog.
+5. Pada bagian **Version**, pilih **"New version"** (*Versi baru*).
+6. Klik tombol biru **Deploy** &rarr; Selesai! Versi terbaru langsung aktif seketika.
 
 ---
 

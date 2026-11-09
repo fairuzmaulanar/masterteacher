@@ -339,20 +339,22 @@
   }
 
   /**
-  * Aksi: Simpan / Perbarui Profil Sekolah & Guru
+  * Aksi: Simpan / Perbarui Profil Sekolah & Guru (Mekanisme UPSERT: Tambah jika belum ada)
   */
   function handleSaveTeacherProfile(teacher) {
     if (!teacher || !teacher.id) {
-      return createJsonResponse({ status: 'error', message: 'Data guru tidak valid.' });
+      return createJsonResponse({ status: 'error', message: 'Data guru tidak valid atau ID guru kosong.' });
     }
 
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName('DataGuru');
-    if (!sheet || sheet.getLastRow() <= 1) {
-      return createJsonResponse({ status: 'error', message: 'Sheet DataGuru belum tersedia.' });
+    if (!sheet) {
+      setupDatabase();
+      sheet = ss.getSheetByName('DataGuru');
     }
 
-    var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).getDisplayValues();
+    var lastRow = sheet.getLastRow();
+    var values = lastRow > 1 ? sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getDisplayValues() : [];
     var targetRowIdx = -1;
 
     for (var i = 0; i < values.length; i++) {
@@ -362,11 +364,37 @@
       }
     }
 
+    // MEKANISME UPSERT: Jika profil guru belum terdaftar di DataGuru, otomatis tambahkan baris baru!
     if (targetRowIdx === -1) {
-      return createJsonResponse({ status: 'error', message: 'Profil guru tidak ditemukan di database.' });
+      var newTeacherRow = [
+        teacher.id,
+        teacher.namaLengkap || 'Guru Pengajar',
+        (teacher.email || '').trim().toLowerCase(),
+        teacher.password || teacher.pin || '1234',
+        teacher.nip || '-',
+        teacher.mataPelajaran || 'Guru Mata Pelajaran',
+        teacher.namaSekolah || 'Sekolah',
+        teacher.alamatSekolah || 'Jl. Pendidikan Karakter Bangsa No. 45',
+        teacher.teleponSekolah || '(021) 7890123',
+        teacher.emailSekolah || 'tatausaha@sekolah.sch.id',
+        teacher.websiteSekolah || '',
+        teacher.namaKepalaSekolah || 'Dr. H. Bambang Sudarsono, M.Pd.',
+        teacher.nipKepalaSekolah || '19760415 200212 1 003',
+        teacher.logoSekolah || '',
+        teacher.createdAt || new Date().toISOString()
+      ];
+
+      sheet.appendRow(newTeacherRow);
+      SpreadsheetApp.flush();
+
+      return createJsonResponse({
+        status: 'success',
+        message: 'Profil guru baru berhasil didaftarkan ke lembar DataGuru Google Sheets.',
+        teacher: mapTeacherRowToProfile(newTeacherRow)
+      });
     }
 
-    // Update kolom-kolom profil
+    // Jika guru sudah ada, perbarui kolom-kolom profil
     if (teacher.namaLengkap !== undefined) sheet.getRange(targetRowIdx, COL_GURU.NAMA + 1).setValue(teacher.namaLengkap);
     if (teacher.email !== undefined) sheet.getRange(targetRowIdx, COL_GURU.EMAIL + 1).setValue(teacher.email);
     if (teacher.nip !== undefined) sheet.getRange(targetRowIdx, COL_GURU.NIP + 1).setValue(teacher.nip);

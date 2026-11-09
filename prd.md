@@ -220,3 +220,8 @@ ZONA BAWAH: MASTER CONTEXT & LOGIKA SISTEM TERKINI (LIVING CONTEXT)
       2. `modal-manage-classes`: Pengelolaan daftar kelas dinamis untuk menambah kelas mengajar baru dan menghapus kelas kosong.
       3. `modal-input-grade`: Formulir cepat input nilai tugas 1, tugas 2, UTS, dan UAS siswa.
     - **Kompilasi Standalone & Bump PWA Cache:** Mengompilasi `views/templates.js` dan `modals/modals.js` via `build-standalone.ps1` dan menaikkan cache Service Worker ke `mtp-cache-v2.0.4`.
+  * [v2.0.5] Penyempurnaan Sinkronisasi Google Sheets & Mekanisme UPSERT Profil Guru Baru:
+    - **Backend UPSERT di `gas/code.gs` (`handleSaveTeacherProfile`):** Menghilangkan bug penolakan profil guru baru. Jika ID guru belum ada di sheet `DataGuru`, backend secara otomatis melakukan `appendRow` (menambahkan baris baru) dengan data lengkap profil, NIP, mapel, dan sekolah tanpa melempar error.
+    - **Prioritisasi Pengiriman Profil di Frontend (`app.js`):** Memperbaiki fungsi `pushToCloud()` agar selalu mendaftarkan dan memverifikasi penyimpanan akun guru di sheet `DataGuru` terlebih dahulu sebelum mengirimkan data turunan (siswa, RPP, soal, jadwal).
+    - **Otomasi Pemulihan URL:** Jika URL Web App dimasukkan di form Sekolah & Logo, sistem secara cerdas menyimpannya dan menginisialisasi sinkronisasi langsung saat tombol simpan ditekan.
+    - **Kompilasi Standalone & Bump PWA Cache:** Menjalankan `build-standalone.ps1` dan menaikkan versi Service Worker ke `mtp-cache-v2.0.5`.

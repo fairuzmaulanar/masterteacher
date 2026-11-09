@@ -4,7 +4,7 @@
  * Engine: ZettBOT Core v4.1 (by Zettbos)
  */
 
-const CACHE_NAME = 'mtp-cache-v2.0.4';
+const CACHE_NAME = 'mtp-cache-v2.0.5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

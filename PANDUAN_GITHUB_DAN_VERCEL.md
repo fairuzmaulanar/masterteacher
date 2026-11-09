@@ -14,53 +14,38 @@ Dengan mengunggah aplikasi ke **GitHub** dan menghubungkannya ke **Vercel**:
 
 ## 🚀 BAGIAN 1: UPLOAD KODE KE GITHUB
 
-Anda dapat memilih salah satu dari 2 cara termudah di bawah ini:
+Pilih cara yang paling Anda sukai:
 
-### CARA A: Lewat Web Browser (Paling Mudah, Tanpa Install Apapun)
-Cocok untuk guru yang belum pernah menginstal Git di komputernya.
+### CARA 1 (Rekomendasi Utama: 1-Klik Otomatis Lewat File Batch)
+Ini adalah cara tercepat dan **menjamin seluruh struktur folder (`gas/`, `modals/`, `views/`) masuk dengan rapi 100%**:
 
-1. Buka situs [https://github.com](https://github.com) dan login (atau daftar akun gratis jika belum punya).
-2. Di pojok kanan atas, klik tombol **[ + ]** lalu pilih **"New repository"**.
-3. Isi data repository:
-   - **Repository name:** `MasterTeacherPlanner` (atau nama lain yang Anda sukai).
-   - **Visibility:** Pilih **Public** (agar bisa dideploy gratis ke Vercel).
-   - *Jangan centang "Add a README file" (biarkan kosong).*
-4. Klik tombol hijau **"Create repository"**.
-5. Pada halaman kosong yang muncul, cari tulisan:  
-   👉 *"uploading an existing file"* (klik tautan tersebut).
-6. Buka File Explorer di komputer Anda, masuk ke folder projek:  
+1. Buka File Explorer di komputer Anda dan masuk ke folder projek:  
    `c:\Users\lenovo\.gemini\antigravity-ide\MasterTeacherPlanner`
-7. Tarik (*drag and drop*) seluruh berkas dan folder projek ke kotak upload di halaman GitHub:
-   - `index.html`
-   - `styles.css`
-   - `app.js`
-   - `sw.js`
-   - `manifest.webmanifest`
-   - `vercel.json`
-   - `.gitignore`
-   - `icon.svg`, `icon-192.png`, `icon-512.png`
-   - Folder `views/`
-   - Folder `modals/`
-   - Folder `gas/` (berisi `code.gs` dan `setup.gs`)
-8. Tunggu proses upload selesai, lalu di bagian bawah klik tombol hijau **"Commit changes"**.
-9. Selesai! Seluruh kode aplikasi Anda kini telah aman tersimpan di GitHub.
+2. **Klik ganda (double-click)** pada berkas:  
+   👉 **`Upload-Ke-GitHub.bat`**
+3. Jendela hitam terminal akan berjalan otomatis. Jika jendela browser pop-up muncul, silakan klik **"Sign In with your browser"** / **"Authorize"** untuk memberi izin ke akun GitHub Anda.
+4. Selesai! Skrip akan otomatis menimpa file yang berantakan di GitHub dan menyusunnya menjadi folder yang rapi dan terstruktur.
 
 ---
 
-### CARA B: Lewat Git Terminal / Git Bash (Bagi yang Memiliki Git)
-Jika di komputer Anda sudah terpasang Git:
+### CARA 2: Lewat Terminal Antigravity / PowerShell
+Jika Anda lebih suka menjalankan perintah di terminal:
 
-1. Buka Terminal / PowerShell / Git Bash di folder projek ini.
-2. Jalankan perintah berikut secara berurutan:
+1. Buka Terminal di Antigravity / PowerShell di folder projek ini.
+2. Jalankan satu perintah berikut:
    ```bash
-   git init
-   git add .
-   git commit -m "feat: inisialisasi Master Teacher Planner v2.0.2"
-   git branch -M main
-   git remote add origin https://github.com/USERNAME_ANDA/MasterTeacherPlanner.git
-   git push -u origin main
+   git push -u origin main --force
    ```
-   *(Ganti `USERNAME_ANDA` dengan username akun GitHub Anda).*
+3. Jika diminta login GitHub di peramban, klik **Authorize**. Selesai!
+
+---
+
+### Mengapa Lewat Web Browser GitHub Sering Berantakan?
+Jika Anda mengunggah lewat tombol *"Upload files"* di situs web GitHub:
+- Browser web tidak dapat mempertahankan folder jika file ditarik satu per satu.
+- Akibatnya file seperti `code.gs`, `templates.js`, dan `modals.js` tumpah ke luar tanpa folder induknya (`gas/`, `views/`, `modals/`).
+- Jika struktur folder hilang, aplikasi akan macet atau layar putih saat dibuka di Vercel karena `index.html` mencari berkas komponen di dalam foldernya masing-masing.
+- **Solusinya:** Cukup gunakan **`Upload-Ke-GitHub.bat`** di atas, maka Git akan otomatis membereskan dan menyusun seluruh folder dengan sempurna!
 
 ---
 

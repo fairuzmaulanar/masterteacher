@@ -1,0 +1,1201 @@
+  <div class="modal-overlay" id="modal-form-rpp">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-rpp-title">Buat Modul Ajar / RPP Baru</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-rpp')">&times;</button>
+      </div>
+      <form id="form-rpp" onsubmit="PlannerModule.saveFromForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="rpp-edit-id">
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="rpp-input-jenjang" class="form-label">Jenjang Pendidikan *</label>
+              <select id="rpp-input-jenjang" class="form-control" onchange="KurikulumMerdeka.onJenjangChange('rpp')">
+                <option value="SD">SD (Sekolah Dasar)</option>
+                <option value="SMP">SMP (Sekolah Menengah Pertama)</option>
+                <option value="SMA" selected>SMA (Sekolah Menengah Atas)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="rpp-input-fase" class="form-label">Fase Pembelajaran *</label>
+              <select id="rpp-input-fase" class="form-control" onchange="KurikulumMerdeka.onFaseChange('rpp')"></select>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="rpp-input-kelas" class="form-label">Target Kelas *</label>
+              <select id="rpp-input-kelas" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label for="rpp-input-komponen" class="form-label">Komponen Kurikulum *</label>
+              <select id="rpp-input-komponen" class="form-control" onchange="KurikulumMerdeka.onKomponenChange('rpp')">
+                <option value="Intrakurikuler">Intrakurikuler (Mata Pelajaran Harian)</option>
+                <option value="Kokurikuler">Kokurikuler (Projek Penguatan Profil Pelajar Pancasila - P5)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" id="rpp-p5-container" style="display: none; background: #fffbeb; padding: 0.85rem; border: 1px solid #fde68a; border-radius: var(--radius-md); margin-bottom: 1rem;">
+            <div style="font-weight: 700; color: #92400e; font-size: 0.825rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#d97706;"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg><span>Konfigurasi Projek P5 (Kokurikuler):</span></div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="rpp-input-p5-tema" class="form-label">Pilihan Tema Utama P5:</label>
+                <select id="rpp-input-p5-tema" class="form-control"></select>
+              </div>
+              <div class="form-group">
+                <label for="rpp-input-p5-dimensi" class="form-label">Fokus Dimensi Karakter Pancasila:</label>
+                <select id="rpp-input-p5-dimensi" class="form-control"></select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="rpp-input-mapel" class="form-label">Mata Pelajaran (Sesuai Fase) *</label>
+              <select id="rpp-input-mapel" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label for="rpp-input-materi" class="form-label">Materi Pokok / Judul Projek *</label>
+              <input type="text" id="rpp-input-materi" class="form-control" required placeholder="Contoh: Logika Algoritma / Projek Gaya Hidup Berkelanjutan">
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="rpp-input-alokasi" class="form-label">Alokasi Waktu</label>
+              <input type="text" id="rpp-input-alokasi" class="form-control" placeholder="Contoh: 2 JP x 45 Menit">
+            </div>
+            <div class="form-group">
+              <label for="rpp-input-semester" class="form-label">Semester</label>
+              <select id="rpp-input-semester" class="form-control">
+                <option value="1">Semester 1 (Ganjil)</option>
+                <option value="2">Semester 2 (Genap)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="rpp-input-tujuan" class="form-label">Tujuan Pembelajaran (TP) *</label>
+            <textarea id="rpp-input-tujuan" class="form-control" required placeholder="Tuliskan capaian dan tujuan yang diharapkan dicapai siswa..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="rpp-input-pembuka" class="form-label">Alur Kegiatan Pembuka & Apersepsi</label>
+            <textarea id="rpp-input-pembuka" class="form-control" placeholder="1. Salam dan doa. 2. Ice breaking apersepsi..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="rpp-input-inti" class="form-label">Alur Kegiatan Inti & Strategi Diferensiasi</label>
+            <textarea id="rpp-input-inti" class="form-control" placeholder="Langkah diferensiasi konten, proses diskusi kelompok, dan penugasan bertingkat..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="rpp-input-penutup" class="form-label">Alur Kegiatan Penutup & Refleksi</label>
+            <textarea id="rpp-input-penutup" class="form-control" placeholder="Refleksi bersama siswa dan tindak lanjut pertemuan berikutnya..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="rpp-input-asesmen" class="form-label">Rencana Asesmen / Evaluasi</label>
+            <textarea id="rpp-input-asesmen" class="form-control" placeholder="Asesmen Formatif (rubrik diskusi) dan Sumatif (tes uji kompetensi)..."></textarea>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="rpp-input-drive" class="form-label">Tautan Dokumen / Google Drive (Opsional)</label>
+              <input type="url" id="rpp-input-drive" class="form-control" placeholder="https://drive.google.com/...">
+            </div>
+            <div class="form-group">
+              <label for="rpp-input-video" class="form-label">Tautan Video / Sumber Web (Opsional)</label>
+              <input type="url" id="rpp-input-video" class="form-control" placeholder="https://youtube.com/...">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-rpp')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Modul Ajar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal RPP Detail & Cetak -->
+  <div class="modal-overlay" id="modal-rpp-detail">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3>Pratinjau Resmi Modul Ajar</h3>
+        <div>
+          <button class="btn btn-dark btn-sm" onclick="PrintModule.printSingleRPP(PlannerModule.currentViewId)">Cetak Dokumen RPP (PDF)</button>
+          <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-rpp-detail')">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body" id="rpp-detail-content">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Timetable Slot -->
+  <div class="modal-overlay" id="modal-form-timetable">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Tambah Jadwal Mengajar Baru</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-timetable')">&times;</button>
+      </div>
+      <form id="form-timetable" onsubmit="TimetableModule.saveSlot(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="sched-input-hari" class="form-label">Hari Mengajar *</label>
+            <select id="sched-input-hari" class="form-control" required>
+              <option value="Senin">Senin</option>
+              <option value="Selasa">Selasa</option>
+              <option value="Rabu">Rabu</option>
+              <option value="Kamis">Kamis</option>
+              <option value="Jumat">Jumat</option>
+            </select>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="sched-input-mulai" class="form-label">Jam Mulai *</label>
+              <input type="time" id="sched-input-mulai" class="form-control" required value="07:30">
+            </div>
+            <div class="form-group">
+              <label for="sched-input-selesai" class="form-label">Jam Selesai *</label>
+              <input type="time" id="sched-input-selesai" class="form-control" required value="09:00">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="sched-input-kelas" class="form-label">Kelas *</label>
+              <select id="sched-input-kelas" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label for="sched-input-mapel" class="form-label">Mata Pelajaran</label>
+              <input type="text" id="sched-input-mapel" class="form-control" placeholder="Nama Mapel">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="sched-input-ruang" class="form-label">Ruang Kelas / Lab</label>
+            <input type="text" id="sched-input-ruang" class="form-control" placeholder="Contoh: Lab Komputer 1 / Ruang 204">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-timetable')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Jadwal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Bobot Nilai -->
+  <div class="modal-overlay" id="modal-grade-weights">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Pengaturan Bobot Nilai Akhir</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-grade-weights')">&times;</button>
+      </div>
+      <form id="form-grade-weights" onsubmit="GradebookModule.saveWeights(event)">
+        <div class="modal-body">
+          <p style="font-size: 0.8rem; color: var(--slate-600); margin-bottom: 1rem;">
+            Tentukan persentase bobot tiap komponen nilai. Total bobot ketiga komponen harus tepat 100%.
+          </p>
+          <div class="form-group">
+            <label for="input-weight-tugas" class="form-label">Bobot Nilai Tugas / Formatif (%)</label>
+            <input type="number" id="input-weight-tugas" class="form-control" min="0" max="100" required>
+          </div>
+          <div class="form-group">
+            <label for="input-weight-uts" class="form-label">Bobot UTS / STS (%)</label>
+            <input type="number" id="input-weight-uts" class="form-control" min="0" max="100" required>
+          </div>
+          <div class="form-group">
+            <label for="input-weight-uas" class="form-label">Bobot UAS / SAS (%)</label>
+            <input type="number" id="input-weight-uas" class="form-control" min="0" max="100" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-grade-weights')">Batal</button>
+          <button type="submit" class="btn btn-primary">Terapkan Bobot</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Student Form -->
+  <div class="modal-overlay" id="modal-form-student">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Data Siswa Baru</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-student')">&times;</button>
+      </div>
+      <form id="form-student" onsubmit="ClassroomModule.saveStudent(event)">
+        <div class="modal-body">
+          <input type="hidden" id="student-edit-id">
+          <div class="form-group">
+            <label for="student-input-nama" class="form-label">Nama Lengkap Siswa *</label>
+            <input type="text" id="student-input-nama" class="form-control" required placeholder="Contoh: Muhammad Rizky">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="student-input-nisn" class="form-label">NISN / Nomor Induk *</label>
+              <input type="text" id="student-input-nisn" class="form-control" required placeholder="008xxxxxxx">
+            </div>
+            <div class="form-group">
+              <label for="student-input-jk" class="form-label">Jenis Kelamin</label>
+              <select id="student-input-jk" class="form-control">
+                <option value="L">Laki-Laki</option>
+                <option value="P">Perempuan</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="student-input-kelas" class="form-label">Kelas</label>
+            <input type="text" id="student-input-kelas" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label for="student-input-catatan" class="form-label">Catatan Karakter / Anekdot Khusus</label>
+            <textarea id="student-input-catatan" class="form-control" placeholder="Contoh: Menunjukkan minat tinggi pada logika matematika, ramah dalam kelompok..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-student')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Siswa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Add Task / Marking -->
+  <div class="modal-overlay" id="modal-form-task">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Catat Agenda Koreksi Tugas Guru</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-task')">&times;</button>
+      </div>
+      <form id="form-task" onsubmit="TaskModule.saveTask(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="task-input-judul" class="form-label">Judul Tugas / Lembar Ujian *</label>
+            <input type="text" id="task-input-judul" class="form-control" required placeholder="Contoh: Koreksi Praktikum Pemrograman Web">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="task-input-kelas" class="form-label">Kelas & Mapel *</label>
+              <input type="text" id="task-input-kelas" class="form-control" required placeholder="Contoh: X-A Informatika">
+            </div>
+            <div class="form-group">
+              <label for="task-input-total" class="form-label">Total Lembar / Siswa *</label>
+              <input type="number" id="task-input-total" class="form-control" min="1" required value="32">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="task-input-deadline" class="form-label">Target Batas Waktu Koreksi *</label>
+            <input type="date" id="task-input-deadline" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-task')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Agenda</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Add Meeting -->
+  <div class="modal-overlay" id="modal-form-meeting">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Catat Notulensi Rapat Dinas / MGMP</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-meeting')">&times;</button>
+      </div>
+      <form id="form-meeting" onsubmit="TaskModule.saveMeeting(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="meeting-input-judul" class="form-label">Nama Pertemuan / Rapat *</label>
+            <input type="text" id="meeting-input-judul" class="form-control" required placeholder="Contoh: Rapat MGMP Kota Persiapan PTS">
+          </div>
+          <div class="form-group">
+            <label for="meeting-input-tanggal" class="form-label">Tanggal Pelaksanaan *</label>
+            <input type="date" id="meeting-input-tanggal" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="meeting-input-hasil" class="form-label">Poin-poin Kesepakatan / Notulensi *</label>
+            <textarea id="meeting-input-hasil" class="form-control" required placeholder="Tuliskan keputusan rapat..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-meeting')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Notulensi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Add Reflection -->
+  <div class="modal-overlay" id="modal-form-reflection">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Tulis Jurnal Refleksi Mengajar Harian</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-reflection')">&times;</button>
+      </div>
+      <form id="form-reflection" onsubmit="TaskModule.saveReflection(event)">
+        <div class="modal-body">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="ref-input-kelas" class="form-label">Kelas Yang Diajar *</label>
+              <input type="text" id="ref-input-kelas" class="form-control" required placeholder="Contoh: X-A">
+            </div>
+            <div class="form-group">
+              <label for="ref-input-materi" class="form-label">Materi / Topik *</label>
+              <input type="text" id="ref-input-materi" class="form-control" required placeholder="Contoh: Pengenalan Algoritma">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ref-input-tanggal" class="form-label">Tanggal Mengajar *</label>
+            <input type="date" id="ref-input-tanggal" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="ref-input-teks" class="form-label">Catatan Refleksi & Evaluasi Diri *</label>
+            <textarea id="ref-input-teks" class="form-control" required placeholder="Apa yang berjalan baik? Apa kendala siswa? Apa yang perlu diperbaiki di pertemuan selanjutnya?"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-reflection')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Refleksi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Switch Profile / Multi-User Teacher -->
+  <div class="modal-overlay" id="modal-switch-profile">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Profil Akun Guru</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-switch-profile')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.8rem; color: var(--slate-600); margin-bottom: 1rem;">
+          Pilih profil guru aktif atau buat akun guru baru untuk perangkat ini.
+        </p>
+        <div id="teacher-profiles-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="AuthManager.openAddTeacherModal()">+ Buat Profil Guru Baru</button>
+        <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-switch-profile')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Add Teacher Profile -->
+  <div class="modal-overlay" id="modal-add-teacher">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Tambah Profil Guru Baru</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-add-teacher')">&times;</button>
+      </div>
+      <form id="form-add-teacher" onsubmit="AuthManager.saveNewTeacher(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="new-teacher-nama" class="form-label">Nama Lengkap & Gelar *</label>
+            <input type="text" id="new-teacher-nama" class="form-control" required placeholder="Contoh: Siti Rahmawati, M.Pd.">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="new-teacher-nip" class="form-label">NIP / NUPTK</label>
+              <input type="text" id="new-teacher-nip" class="form-control" placeholder="1990xxxx...">
+            </div>
+            <div class="form-group">
+              <label for="new-teacher-pin" class="form-label">PIN Keamanan (4 Digit)</label>
+              <input type="password" id="new-teacher-pin" class="form-control" maxlength="6" value="1234">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="new-teacher-sekolah" class="form-label">Nama Sekolah / Instansi *</label>
+            <input type="text" id="new-teacher-sekolah" class="form-control" required placeholder="Contoh: SMA Negeri 1...">
+          </div>
+          <div class="form-group">
+            <label for="new-teacher-mapel" class="form-label">Mata Pelajaran yang Diampu</label>
+            <input type="text" id="new-teacher-mapel" class="form-control" placeholder="Contoh: Matematika / Informatika">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-add-teacher')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Profil Guru</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Form Material / Bahan Ajar -->
+  <div class="modal-overlay" id="modal-form-material">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-material-title">Tambah Materi Pembelajaran Baru</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-material')">&times;</button>
+      </div>
+      <form id="form-material" onsubmit="RepositoryModule.saveFromForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="mat-edit-id">
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="mat-input-jenjang" class="form-label">Jenjang *</label>
+              <select id="mat-input-jenjang" class="form-control" onchange="KurikulumMerdeka.onJenjangChange('mat')">
+                <option value="SD">SD (Sekolah Dasar)</option>
+                <option value="SMP">SMP (Sekolah Menengah Pertama)</option>
+                <option value="SMA" selected>SMA (Sekolah Menengah Atas)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="mat-input-fase" class="form-label">Fase Pembelajaran *</label>
+              <select id="mat-input-fase" class="form-control" onchange="KurikulumMerdeka.onFaseChange('mat')"></select>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="mat-input-kelas" class="form-label">Kelas Target *</label>
+              <select id="mat-input-kelas" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label for="mat-input-mapel" class="form-label">Mata Pelajaran (Sesuai Fase) *</label>
+              <select id="mat-input-mapel" class="form-control" required></select>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="mat-input-judul" class="form-label">Judul Materi / Bahan Ajar *</label>
+              <input type="text" id="mat-input-judul" class="form-control" required placeholder="Contoh: Algoritma Pemrograman & Logika Komputasi">
+            </div>
+            <div class="form-group">
+              <label for="mat-input-topik" class="form-label">Topik / Bab</label>
+              <input type="text" id="mat-input-topik" class="form-control" placeholder="Contoh: Bab 1 - Berpikir Komputasional">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="mat-input-alokasi" class="form-label">Alokasi Waktu</label>
+            <input type="text" id="mat-input-alokasi" class="form-control" placeholder="Contoh: 2 JP x 45 Menit">
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="mat-input-kesulitan" class="form-label">Tingkat Kesulitan</label>
+              <select id="mat-input-kesulitan" class="form-control">
+                <option value="Dasar">Dasar (Reguler)</option>
+                <option value="Menengah">Menengah</option>
+                <option value="Pengayaan">Pengayaan / Remedial</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="mat-input-model" class="form-label">Model Pembelajaran</label>
+              <input type="text" id="mat-input-model" class="form-control" placeholder="Contoh: Project-Based Learning / Diskusi Interaktif">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="mat-input-cptp" class="form-label">Tujuan Pembelajaran / Capaian Pembelajaran (CP/TP) *</label>
+            <textarea id="mat-input-cptp" class="form-control" required placeholder="Target kompetensi yang hendak dicapai peserta didik..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="mat-input-ringkasan" class="form-label">Ringkasan Inti Materi & Peta Konsep</label>
+            <textarea id="mat-input-ringkasan" class="form-control" style="min-height: 100px;" placeholder="Poin-poin esensial konsep pembelajaran atau ringkasan materi presentasi..."></textarea>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="mat-input-doc" class="form-label">Tautan Dokumen (PDF, PPTX, e-Book)</label>
+              <input type="url" id="mat-input-doc" class="form-control" placeholder="https://drive.google.com/...">
+            </div>
+            <div class="form-group">
+              <label for="mat-input-video" class="form-label">Sematan Video / Simulasi (YouTube, PhET)</label>
+              <input type="url" id="mat-input-video" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="mat-input-cloud" class="form-label">Cloud Storage Sinkronisasi (OneDrive / Dropbox / Google Drive)</label>
+            <input type="url" id="mat-input-cloud" class="form-control" placeholder="https://onedrive.live.com/...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-material')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Bahan Ajar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Material Media Presentation Viewer -->
+  <div class="modal-overlay" id="modal-material-viewer">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="mat-viewer-title">Presentasi Bahan Ajar di Kelas</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-material-viewer')">&times;</button>
+      </div>
+      <div class="modal-body" id="mat-viewer-content">
+        <!-- Dynamically loaded video or content -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-material-viewer')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Assign Material to Schedule -->
+  <div class="modal-overlay" id="modal-assign-schedule">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Tautkan Materi ke Jadwal Mengajar</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-assign-schedule')">&times;</button>
+      </div>
+      <form id="form-assign-schedule" onsubmit="RepositoryModule.saveScheduleAssignment(event)">
+        <div class="modal-body">
+          <input type="hidden" id="assign-material-id">
+          <p id="assign-material-name" style="font-weight: 700; color: var(--emerald-800); margin-bottom: 0.75rem;"></p>
+          <div class="form-group">
+            <label for="assign-target-slot" class="form-label">Pilih Jadwal Sesi Mengajar:</label>
+            <select id="assign-target-slot" class="form-control" required></select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-assign-schedule')">Batal</button>
+          <button type="submit" class="btn btn-primary">Tautkan ke Jadwal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Form Question Creator (Multi-Type) -->
+  <div class="modal-overlay" id="modal-form-question">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-question-title">Buat Butir Soal Baru</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-question')">&times;</button>
+      </div>
+      <form id="form-question" onsubmit="QuestionBankModule.saveQuestion(event)">
+        <div class="modal-body">
+          <input type="hidden" id="q-edit-id">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="q-input-materi" class="form-label">Terkait Materi Pembelajaran:</label>
+              <select id="q-input-materi" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="q-input-type" class="form-label">Tipe / Format Soal *</label>
+              <select id="q-input-type" class="form-control" onchange="QuestionBankModule.onTypeChange(this.value)">
+                <option value="Pilihan Ganda">Pilihan Ganda (Multiple Choice)</option>
+                <option value="Esai">Esai / Uraian</option>
+                <option value="Benar/Salah">Benar / Salah (True/False)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="q-input-bloom" class="form-label">Tingkat Taksonomi Bloom *</label>
+              <select id="q-input-bloom" class="form-control" onchange="QuestionBankModule.onBloomChange(this.value)">
+                <option value="C1">C1 - Mengingat (LOTS)</option>
+                <option value="C2">C2 - Memahami (LOTS)</option>
+                <option value="C3">C3 - Menerapkan / Mengaplikasikan (MOTS)</option>
+                <option value="C4" selected>C4 - Menganalisis (HOTS)</option>
+                <option value="C5">C5 - Mengevaluasi (HOTS)</option>
+                <option value="C6">C6 - Mencipta / Berkreasi (HOTS)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="q-input-score" class="form-label">Bobot Poin / Skor</label>
+              <input type="number" id="q-input-score" class="form-control" min="1" value="10">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="q-input-stimulus" class="form-label">Stimulus / Kasus Pengantar (Teks Cerita, Studi Kasus, Bagan):</label>
+            <textarea id="q-input-stimulus" class="form-control" placeholder="Kutipan studi kasus atau konteks masalah yang menjadi pengantar soal..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="q-input-pertanyaan" class="form-label">Kalimat Pertanyaan Butir Soal *</label>
+            <textarea id="q-input-pertanyaan" class="form-control" required placeholder="Tuliskan butir instruksi pertanyaan soal..."></textarea>
+          </div>
+
+          <!-- Section Opsi Pilihan Ganda -->
+          <div id="q-section-mc">
+            <label class="form-label">Opsi Jawaban & Kunci Jawaban Benar:</label>
+            <div class="form-group" style="display:flex;gap:0.5rem;align-items:center;">
+              <span style="font-weight:700;width:24px;">A.</span>
+              <input type="text" id="q-opt-a" class="form-control" placeholder="Pilihan jawaban A">
+            </div>
+            <div class="form-group" style="display:flex;gap:0.5rem;align-items:center;">
+              <span style="font-weight:700;width:24px;">B.</span>
+              <input type="text" id="q-opt-b" class="form-control" placeholder="Pilihan jawaban B">
+            </div>
+            <div class="form-group" style="display:flex;gap:0.5rem;align-items:center;">
+              <span style="font-weight:700;width:24px;">C.</span>
+              <input type="text" id="q-opt-c" class="form-control" placeholder="Pilihan jawaban C">
+            </div>
+            <div class="form-group" style="display:flex;gap:0.5rem;align-items:center;">
+              <span style="font-weight:700;width:24px;">D.</span>
+              <input type="text" id="q-opt-d" class="form-control" placeholder="Pilihan jawaban D">
+            </div>
+            <div class="form-group" style="display:flex;gap:0.5rem;align-items:center;">
+              <span style="font-weight:700;width:24px;">E.</span>
+              <input type="text" id="q-opt-e" class="form-control" placeholder="Pilihan jawaban E">
+            </div>
+            <div class="form-group">
+              <label for="q-correct-mc" class="form-label">Kunci Jawaban Benar *</label>
+              <select id="q-correct-mc" class="form-control">
+                <option value="A">Opsi A</option>
+                <option value="B">Opsi B</option>
+                <option value="C">Opsi C</option>
+                <option value="D">Opsi D</option>
+                <option value="E">Opsi E</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Section Esai / Benar Salah -->
+          <div id="q-section-essay" style="display: none;">
+            <div class="form-group">
+              <label for="q-input-scoring-guide" class="form-label">Pedoman Penskoran / Kata Kunci Rubrik *</label>
+              <textarea id="q-input-scoring-guide" class="form-control" placeholder="Sebutkan kata kunci atau kriteria jawaban yang dinilai benar..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="q-input-pembahasan" class="form-label">Pembahasan Soal</label>
+            <textarea id="q-input-pembahasan" class="form-control" placeholder="Uraian penjelasan mengapa jawaban tersebut benar..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-question')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan ke Bank Soal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Generator Paket Ujian -->
+  <div class="modal-overlay" id="modal-generate-package">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Generator Paket Ujian / Asesmen</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-generate-package')">&times;</button>
+      </div>
+      <form id="form-generate-package" onsubmit="QuestionBankModule.executeGeneratePackage(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="pkg-input-judul" class="form-label">Judul Paket Ujian / Kuis *</label>
+            <input type="text" id="pkg-input-judul" class="form-control" required placeholder="Contoh: Penilaian Harian Bab 1 - Logika Algoritma">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="pkg-input-kelas" class="form-label">Kelas Target</label>
+              <select id="pkg-input-kelas" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="pkg-input-waktu" class="form-label">Waktu Pengerjaan (Menit)</label>
+              <input type="number" id="pkg-input-waktu" class="form-control" value="60" min="15">
+            </div>
+          </div>
+          <h4 style="font-size:0.85rem;font-weight:700;color:var(--slate-800);margin:0.75rem 0 0.25rem;">Proporsi Komposisi Kognitif Bloom:</h4>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="pkg-count-lots" class="form-label">Jumlah Soal LOTS (C1-C2):</label>
+              <input type="number" id="pkg-count-lots" class="form-control" value="2" min="0">
+            </div>
+            <div class="form-group">
+              <label for="pkg-count-mots" class="form-label">Jumlah Soal MOTS (C3):</label>
+              <input type="number" id="pkg-count-mots" class="form-control" value="2" min="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="pkg-count-hots" class="form-label">Jumlah Soal HOTS (C4-C6):</label>
+            <input type="number" id="pkg-count-hots" class="form-control" value="2" min="0">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-generate-package')">Batal</button>
+          <button type="submit" class="btn btn-primary">Generate Paket Ujian</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Exam Paper Print Preview -->
+  <div class="modal-overlay" id="modal-exam-print-preview">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3>Pratinjau Lembar Ujian Resmi (Paper-Based)</h3>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-dark btn-sm" onclick="QuestionBankModule.printExamDoc()">Cetak Kertas</button>
+          <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-exam-print-preview')">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="view-tabs" style="margin-bottom:1rem;">
+          <button class="view-tab active" data-examtab="soal" onclick="QuestionBankModule.switchExamPreviewTab('soal')">Lembar Soal Siswa</button>
+          <button class="view-tab" data-examtab="ljk" onclick="QuestionBankModule.switchExamPreviewTab('ljk')">Lembar Jawaban Siswa</button>
+          <button class="view-tab" data-examtab="kunci" onclick="QuestionBankModule.switchExamPreviewTab('kunci')">Kunci & Rubrik Pembahasan</button>
+        </div>
+        <div id="exam-print-body-content">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Push Exam Scores to Gradebook -->
+  <div class="modal-overlay" id="modal-push-gradebook">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Salurkan Nilai Ujian ke Buku Nilai</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-push-gradebook')">&times;</button>
+      </div>
+      <form id="form-push-gradebook" onsubmit="QuestionBankModule.executePushToGradebook(event)">
+        <div class="modal-body">
+          <input type="hidden" id="push-pkg-id">
+          <p style="font-size:0.825rem;color:var(--slate-600);margin-bottom:1rem;">
+            Masukkan nilai hasil asesmen paket ini ke dalam Buku Nilai (Gradebook) kelas terkait.
+          </p>
+          <div class="form-group">
+            <label for="push-target-column" class="form-label">Salurkan Ke Kolom Penilaian:</label>
+            <select id="push-target-column" class="form-control">
+              <option value="t1">Tugas 1 (Formatif)</option>
+              <option value="t2">Tugas 2 (Formatif)</option>
+              <option value="uts">UTS / STS (Sumatif Tengah Semester)</option>
+              <option value="uas">UAS / SAS (Sumatif Akhir Semester)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Input Nilai Per Siswa:</label>
+            <div id="push-students-grade-inputs" style="max-height:220px;overflow-y:auto;border:1px solid var(--slate-200);border-radius:var(--radius-md);padding:0.5rem;">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-push-gradebook')">Batal</button>
+          <button type="submit" class="btn btn-primary">Terapkan ke Buku Nilai</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Modal Panduan Instalasi Offline PWA -->
+  <div class="modal-overlay" id="modal-pwa-guide">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          <div style="background:var(--emerald-600);color:#ffffff;width:32px;height:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </div>
+          <h3 style="margin:0;">Panduan Pemasangan Aplikasi (PWA)</h3>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-pwa-guide')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:1.25rem 1.5rem; max-height:75vh; overflow-y:auto;">
+        <p style="font-size:0.875rem;color:var(--slate-600);margin-bottom:1.15rem;line-height:1.5;">
+          Aplikasi Master Teacher Planner mendukung <strong>Progressive Web App (PWA)</strong> offline. Karena peramban Chrome memiliki tata letak menu khusus pada berkas lokal, silakan pilih salah satu opsi mudah berikut:
+        </p>
+
+        <!-- Opsi 1: Sesuai Gambar Chrome Pengguna -->
+        <div style="border:1.5px solid var(--emerald-500);border-radius:var(--radius-md);padding:1rem;margin-bottom:1rem;background:var(--emerald-50);">
+          <div style="font-weight:700;color:var(--emerald-900);font-size:0.95rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">
+            <span>⚡ CARA 1: Langsung Pasang di Chrome Anda Sekarang (Sesuai Menu Gambar Anda)</span>
+          </div>
+          <p style="font-size:0.825rem;color:var(--emerald-800);margin-bottom:0.5rem;line-height:1.5;">
+            Pada peramban Chrome versi terbaru saat membuka berkas lokal (<code>file://</code>), tombol pemasangan berada di dalam submenu:
+          </p>
+          <ol style="margin:0;padding-left:1.25rem;font-size:0.825rem;color:var(--slate-800);line-height:1.75;">
+            <li>Buka kembali menu <strong>Titik Tiga (⋮)</strong> di sudut kanan atas Chrome (seperti di gambar Anda).</li>
+            <li>Arahkan atau klik pada menu: <strong>"Cast, save, and share"</strong> (atau <em>"Simpan dan bagikan"</em>).</li>
+            <li>Klik pilihan: <strong>"Install page as app..."</strong> (Pasang halaman sebagai aplikasi) ATAU <strong>"Create shortcut..."</strong> (Buat pintasan) lalu centang <em>"Open as window"</em>.</li>
+            <li>Klik tombol <strong>"Install" / "Create"</strong>. Ikon Master Teacher Planner akan langsung terpasang di Desktop & Taskbar laptop Anda!</li>
+          </ol>
+        </div>
+
+        <!-- Opsi 2: Localhost Server PWA Runner -->
+        <div style="border:1px solid var(--sky-300);border-radius:var(--radius-md);padding:1rem;margin-bottom:1rem;background:var(--sky-50);">
+          <div style="font-weight:700;color:var(--sky-900);font-size:0.95rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--sky-600);"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> <span>CARA 2: PWA Otomatis 1-Klik (Rekomendasi Service Worker Aktif)</span>
+          </div>
+          <ol style="margin:0;padding-left:1.25rem;font-size:0.825rem;color:var(--slate-800);line-height:1.75;">
+            <li>Buka folder proyek aplikasi di File Explorer Windows Anda.</li>
+            <li>Klik 2x berkas: <strong>"Buka-Aplikasi-PWA.bat"</strong>.</li>
+            <li>Aplikasi akan berjalan otomatis di <code>http://localhost:8080</code> dan ikon <strong>Install / Monitor</strong> resmi di samping bilah URL Chrome akan langsung aktif untuk instalasi 1-klik!</li>
+          </ol>
+        </div>
+
+        <!-- Opsi 3: Pintasan Desktop Chrome / Edge -->
+        <div style="border:1px solid var(--slate-200);border-radius:var(--radius-md);padding:1rem;margin-bottom:1rem;background:var(--slate-50);">
+          <div style="font-weight:700;color:var(--slate-900);font-size:0.95rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--slate-600);"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> <span>CARA 3: Buat Pintasan Desktop Mandiri (Window App)</span>
+          </div>
+          <p style="margin:0;font-size:0.825rem;color:var(--slate-700);line-height:1.6;">
+            Saat membuka di Chrome atau Edge, buka menu <strong>Titik Tiga (&#8942;)</strong> &gt; <em>Simpan dan bagikan</em> &gt; pilih <strong>"Buat pintasan..."</strong> lalu centang <em>"Buka sebagai jendela"</em>. Aplikasi akan langsung terpasang di Desktop &amp; Taskbar!
+          </p>
+        </div>
+
+        <!-- Opsi 4: Safari iOS -->
+        <div style="border:1px solid var(--slate-200);border-radius:var(--radius-md);padding:1rem;background:var(--slate-50);">
+          <div style="font-weight:700;color:var(--slate-900);font-size:0.95rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--slate-600);"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg> <span>CARA 4: Di iPhone / iPad / Mac (Safari)</span>
+          </div>
+          <ol style="margin:0;padding-left:1.25rem;font-size:0.825rem;color:var(--slate-700);line-height:1.7;">
+            <li>Tekan tombol <strong>Bagikan / Share</strong> (ikon kotak dengan panah ke atas).</li>
+            <li>Gulir dan pilih <strong>"Add to Home Screen" (Tambahkan ke Layar Utama)</strong>.</li>
+            <li>Tekan <strong>"Add" (Tambah)</strong> di sudut kanan atas.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="UI.closeModal('modal-pwa-guide')">Mengerti, Siap Pasang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Pengaturan Identitas Sekolah & Logo KOP Kedinasan -->
+  <div class="modal-overlay" id="modal-school-settings">
+    <div class="modal-dialog modal-lg" style="max-width: 780px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div class="stat-icon-wrapper icon-emerald" style="width: 32px; height: 32px;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 1.1rem;">Pengaturan Profil, Sekolah &amp; Logo KOP</h3>
+            <p style="margin: 0; font-size: 0.775rem; color: var(--slate-500);">Kustomisasi logo sekolah resmi dan identitas KOP pada seluruh cetakan dokumen kedinasan.</p>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-school-settings')">&times;</button>
+      </div>
+      <form id="form-school-settings" onsubmit="ProfileSettingsModule.saveSettings(event)">
+        <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+          <!-- Bagian 1: Logo Sekolah & Live KOP Preview -->
+          <div style="border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem; background: var(--slate-50);" id="box-logo-setting">
+            <div style="font-weight: 700; color: var(--slate-900); font-size: 0.9rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+              <span>1. Logo Resmi Sekolah &amp; Pratinjau KOP Kedinasan</span>
+              <span id="logo-status-tag" class="badge icon-emerald" style="font-size: 0.7rem;">Logo Standar Aktif</span>
+            </div>
+            <div style="display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap;">
+              <div style="width: 80px; height: 80px; border: 2px dashed var(--slate-300); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; background: var(--white); overflow: hidden;" id="preview-logo-wrapper">
+                <img id="img-preview-logo" src="" style="width: 100%; height: 100%; object-fit: contain; display: none;" alt="Preview Logo">
+                <svg id="svg-default-logo-preview" width="40" height="40" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="45" stroke="#64748b" stroke-width="4" fill="#f8fafc"/><path d="M50 20 L75 35 L75 65 L50 80 L25 65 L25 35 Z" stroke="#64748b" stroke-width="3" fill="none"/></svg>
+              </div>
+              <div style="flex: 1; min-width: 220px;">
+                <input type="file" id="input-school-logo-file" accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/webp" style="display: none;" onchange="ProfileSettingsModule.handleLogoUpload(event)">
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('input-school-logo-file').click()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span>Pilih Berkas Logo Sekolah</span>
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-sm" id="btn-remove-logo" onclick="ProfileSettingsModule.removeLogo()" style="color: var(--rose-600); display: none;">Hapus Logo</button>
+                </div>
+                <div style="font-size: 0.725rem; color: var(--slate-500); margin-top: 0.4rem;">
+                  Format didukung: PNG, JPG, WebP, SVG. Otomatis dikompresi kanvas hemat memori (&lt;40KB).
+                </div>
+              </div>
+            </div>
+
+            <!-- Live KOP Preview Box -->
+            <div style="margin-top: 1rem; border: 1px solid var(--slate-300); border-radius: var(--radius-sm); padding: 0.75rem; background: var(--white);" id="live-kop-container">
+              <div style="font-size: 0.7rem; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 0.4rem;">Simulasi Tampilan KOP Surat Kedinasan:</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 0.5rem;">
+                <div id="live-kop-logo-box" style="width: 50px; height: 50px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                  <!-- Dynamically rendered -->
+                </div>
+                <div style="flex: 1; text-align: center; padding: 0 6px;">
+                  <div style="font-size: 0.725rem; font-weight: 700; color: #000; letter-spacing: 0.05em;">PEMERINTAH DAERAH PROVINSI / DINAS PENDIDIKAN</div>
+                  <div id="live-kop-school-name" style="font-size: 0.95rem; font-weight: 900; color: #000; text-transform: uppercase; margin: 1px 0;">SMA NEGERI 1 HARAPAN NUSANTARA</div>
+                  <div id="live-kop-school-address" style="font-size: 0.65rem; color: #333; line-height: 1.3;">Jl. Pendidikan Karakter Bangsa No. 45 &bull; Telp: (021) 7890123 &bull; Email: tatausaha@sekolah.sch.id</div>
+                </div>
+                <div style="width: 50px; flex-shrink: 0;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bagian 2: Identitas Lembaga / Sekolah -->
+          <div style="margin-bottom: 1.25rem;">
+            <div style="font-weight: 700; color: var(--slate-900); font-size: 0.9rem; margin-bottom: 0.75rem;">2. Data Lembaga / Sekolah</div>
+            <div class="form-group">
+              <label class="form-label">Nama Resmi Satuan Pendidikan / Sekolah *</label>
+              <input type="text" id="setting-school-name" class="form-control" required placeholder="Contoh: SMA Negeri 1 Harapan Nusantara" oninput="ProfileSettingsModule.updateLiveKop()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Alamat Lengkap Sekolah (Untuk Baris KOP Surat) *</label>
+              <input type="text" id="setting-school-address" class="form-control" required placeholder="Contoh: Jl. Pendidikan Karakter Bangsa No. 45" oninput="ProfileSettingsModule.updateLiveKop()">
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Nomor Telepon Sekolah</label>
+                <input type="text" id="setting-school-phone" class="form-control" placeholder="(021) 7890123" oninput="ProfileSettingsModule.updateLiveKop()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Resmi Sekolah</label>
+                <input type="email" id="setting-school-email" class="form-control" placeholder="tatausaha@sekolah.sch.id" oninput="ProfileSettingsModule.updateLiveKop()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Website Resmi Sekolah (Opsional)</label>
+              <input type="text" id="setting-school-website" class="form-control" placeholder="www.sman1harapannusantara.sch.id" oninput="ProfileSettingsModule.updateLiveKop()">
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Nama Kepala Sekolah (Untuk Pengesahan) *</label>
+                <input type="text" id="setting-principal-name" class="form-control" required placeholder="Dr. H. Bambang Sudarsono, M.Pd.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">NIP Kepala Sekolah *</label>
+                <input type="text" id="setting-principal-nip" class="form-control" required placeholder="19760415 200212 1 003">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bagian 3: Identitas Guru Pengampu -->
+          <div>
+            <div style="font-weight: 700; color: var(--slate-900); font-size: 0.9rem; margin-bottom: 0.75rem;">3. Data Guru Pengampu</div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Nama Lengkap &amp; Gelar Guru *</label>
+                <input type="text" id="setting-teacher-name" class="form-control" required placeholder="Budi Pratama, S.Pd., M.Kom.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">NIP / NUPTK Guru</label>
+                <input type="text" id="setting-teacher-nip" class="form-control" placeholder="19880512 201201 1 003">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mata Pelajaran Utama yang Diampu *</label>
+              <input type="text" id="setting-teacher-mapel" class="form-control" required placeholder="Informatika &amp; Pemrograman">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-school-settings')">Batal</button>
+          <button type="submit" class="btn btn-primary">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span>Simpan Pengaturan Sekolah &amp; Logo</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Konfigurasi Database Cloud Google Sheets -->
+  <div class="modal-overlay" id="modal-cloud-sync">
+    <div class="modal-dialog modal-md">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <div style="width:32px; height:32px; border-radius:var(--radius-md); background:var(--emerald-50); color:var(--emerald-600); display:flex; align-items:center; justify-content:center;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          </div>
+          <div>
+            <h3 style="margin:0; font-size:1.05rem;">Database Google Sheets (Cloud Sync)</h3>
+            <p style="margin:0; font-size:0.75rem; color:var(--slate-500);">Sinkronisasi data guru, siswa, RPP, dan nilai ke Google Spreadsheet pribadi</p>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-cloud-sync')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Live Connection Status Box -->
+        <div id="cloud-status-banner" style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:var(--radius-md); padding:0.85rem; margin-bottom:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span id="cloud-status-dot" style="width:10px; height:10px; border-radius:50%; background:var(--slate-400); display:inline-block;"></span>
+              <span id="cloud-status-text" style="font-weight:700; font-size:0.85rem; color:var(--slate-700);">Belum Terhubung</span>
+            </div>
+            <span id="cloud-last-sync-text" style="font-size:0.725rem; color:var(--slate-500);">Belum pernah disinkronkan</span>
+          </div>
+          <div id="cloud-server-info" style="font-size:0.75rem; color:var(--slate-600); margin-top:0.4rem; display:none;"></div>
+        </div>
+
+        <form id="form-cloud-config" onsubmit="CloudDBManager.saveConfig(event)">
+          <div class="form-group">
+            <label for="input-gas-url" class="form-label">URL Web App Google Apps Script *</label>
+            <input type="url" id="input-gas-url" class="form-control" placeholder="https://script.google.com/macros/s/.../exec" required autocomplete="off">
+            <div style="font-size:0.725rem; color:var(--slate-500); margin-top:0.35rem; line-height:1.4;">
+              Didapatkan setelah melakukan <strong>Deploy &rarr; New deployment &rarr; Web app</strong> pada Apps Script yang terhubung ke Google Spreadsheet Anda.
+            </div>
+          </div>
+
+          <div class="form-group" style="background:#f8fafc; border:1px solid var(--slate-200); border-radius:var(--radius-md); padding:0.75rem;">
+            <label style="display:flex; align-items:flex-start; gap:0.5rem; cursor:pointer; margin:0;">
+              <input type="checkbox" id="check-auto-sync" style="margin-top:0.2rem;" onchange="CloudDBManager.toggleAutoSync(this.checked)">
+              <div>
+                <span style="font-weight:700; font-size:0.85rem; color:var(--slate-800);">Otomatis Sinkronkan Perubahan Data (Auto-Sync)</span>
+                <p style="margin:0; font-size:0.725rem; color:var(--slate-500); line-height:1.35;">
+                  Setiap kali Anda menambah, mengedit, atau menghapus data (RPP, siswa, nilai, presensi), perubahan otomatis dikirim ke Google Sheets di latar belakang.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:1rem;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-cloud-test" onclick="CloudDBManager.testConnection()" style="justify-content:center;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Uji Koneksi URL</span>
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-cloud-pull" onclick="CloudDBManager.pullFromCloud()" style="justify-content:center;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Tarik dari Sheets</span>
+            </button>
+          </div>
+
+          <div style="margin-top:0.5rem;">
+            <button type="button" class="btn btn-primary btn-block btn-sm" id="btn-cloud-push" onclick="CloudDBManager.pushToCloud()" style="justify-content:center;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+              <span>Kirim Seluruh Data Lokal ke Google Sheets</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Help & Instructions Banner -->
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--radius-md); padding:0.75rem; margin-top:1.25rem;">
+          <div style="display:flex; align-items:center; gap:0.4rem; font-weight:700; font-size:0.8rem; color:#166534; margin-bottom:0.35rem;">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Belum Punya Database Spreadsheet?</span>
+          </div>
+          <div style="font-size:0.75rem; color:#14532d; line-height:1.4;">
+            Buka berkas panduan <strong>PANDUAN_DATABASE_GOOGLE_SHEETS.md</strong> di folder projek untuk melihat tutorial praktis cara membuat spreadsheet dan memasang kode <code>gas/setup.gs</code> &amp; <code>gas/code.gs</code> dalam 5 menit.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-cloud-sync')">Tutup</button>
+        <button type="button" class="btn btn-dark" onclick="CloudDBManager.saveUrlOnly()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          <span>Simpan URL Database</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Agenda Kalender Akademik -->
+  <div class="modal-overlay" id="modal-form-academic-event">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-event-title">Tambah Agenda Kalender Akademik</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-form-academic-event')">&times;</button>
+      </div>
+      <form id="form-academic-event" onsubmit="TimetableModule.saveEvent(event)">
+        <div class="modal-body">
+          <input type="hidden" id="event-edit-id">
+          <div class="form-group">
+            <label for="event-input-judul" class="form-label">Nama Agenda / Kegiatan *</label>
+            <input type="text" id="event-input-judul" class="form-control" required placeholder="Contoh: Asesmen Tengah Semester (STS) / Libur Nasional">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="event-input-tanggal" class="form-label">Tanggal Pelaksanaan *</label>
+              <input type="date" id="event-input-tanggal" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="event-input-kategori" class="form-label">Kategori Agenda *</label>
+              <select id="event-input-kategori" class="form-control" required>
+                <option value="Ujian">Ujian / Asesmen (STS / SAS)</option>
+                <option value="KegiatanSekolah">Kegiatan Sekolah / Rapat Dinas</option>
+                <option value="LiburNasional">Libur Nasional / Cuti Bersama</option>
+                <option value="P5">Pekan Projek P5</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="event-input-keterangan" class="form-label">Keterangan / Catatan Tambahan</label>
+            <textarea id="event-input-keterangan" class="form-control" rows="2" placeholder="Catatan teknis ruangan, pengawas, atau instruksi pelaksanaan..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-form-academic-event')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Agenda</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Kelola Daftar Kelas -->
+  <div class="modal-overlay" id="modal-manage-classes">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Kelola Daftar Kelas Mengajar</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-manage-classes')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.8rem; color: var(--slate-600); margin-bottom: 1rem;">
+          Tambahkan kelas-kelas yang Anda ampu pada tahun ajaran ini. Kelas yang dibuat akan otomatis muncul di seluruh menu jadwal, nilai, dan absensi.
+        </p>
+        <div class="form-group">
+          <label for="input-new-class-name" class="form-label">Tambah Kelas Baru:</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="input-new-class-name" class="form-control" placeholder="Contoh: X-A, XI-IPA 1, Kelas 4-B...">
+            <button type="button" class="btn btn-primary btn-sm" onclick="ClassroomModule.addClassFromInput()" style="white-space: nowrap;">
+              + Tambah Kelas
+            </button>
+          </div>
+        </div>
+        <div style="margin-top: 1rem;">
+          <label class="form-label">Daftar Kelas Aktif Saat Ini:</label>
+          <div id="manage-classes-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-manage-classes')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Input / Edit Nilai Siswa -->
+  <div class="modal-overlay" id="modal-input-grade">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-grade-title">Input Nilai Peserta Didik</h3>
+        <button class="btn btn-ghost btn-sm" onclick="UI.closeModal('modal-input-grade')">&times;</button>
+      </div>
+      <form id="form-input-grade" onsubmit="GradebookModule.saveGradeFromModal(event)">
+        <div class="modal-body">
+          <input type="hidden" id="grade-edit-id">
+          <div class="form-group">
+            <label for="grade-input-student" class="form-label">Pilih Peserta Didik *</label>
+            <select id="grade-input-student" class="form-control" required onchange="GradebookModule.onModalStudentSelect(this.value)">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="grade-input-tugas1" class="form-label">Nilai Tugas 1 (0-100) *</label>
+              <input type="number" id="grade-input-tugas1" class="form-control" min="0" max="100" required placeholder="Contoh: 85">
+            </div>
+            <div class="form-group">
+              <label for="grade-input-tugas2" class="form-label">Nilai Tugas 2 (0-100) *</label>
+              <input type="number" id="grade-input-tugas2" class="form-control" min="0" max="100" required placeholder="Contoh: 88">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="grade-input-uts" class="form-label">Nilai UTS / STS (0-100) *</label>
+              <input type="number" id="grade-input-uts" class="form-control" min="0" max="100" required placeholder="Contoh: 80">
+            </div>
+            <div class="form-group">
+              <label for="grade-input-uas" class="form-label">Nilai UAS / SAS (0-100) *</label>
+              <input type="number" id="grade-input-uas" class="form-control" min="0" max="100" required placeholder="Contoh: 90">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="UI.closeModal('modal-input-grade')">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Nilai</button>
+        </div>
+      </form>
+    </div>
+  </div>

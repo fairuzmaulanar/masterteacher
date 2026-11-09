@@ -1,0 +1,156 @@
+﻿        <section class="app-view" id="view-ai-export">
+          <div class="ai-hub-container">
+            <!-- AI Prompt & Controls -->
+            <div class="ai-prompt-box">
+              <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.45rem;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--emerald-600);"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Asisten Cerdas Guru (AI Generator)
+              </h3>
+              <p style="font-size: 0.8rem; color: var(--slate-600); margin-bottom: 1.25rem;">
+                Membantu menyusun ide pembelajaran Kurikulum Merdeka, diferensiasi kelas, rubrik asesmen, dan narasi komentar rapor siswa.
+              </p>
+
+              <div class="form-group">
+                <label for="ai-prompt-category" class="form-label">Kategori Bantuan AI:</label>
+                <select id="ai-prompt-category" class="form-control">
+                  <option value="icebreaking">Ide Aktivitas Pembuka & Ice Breaking Menarik</option>
+                  <option value="diferensiasi">Strategi Pembelajaran Berdiferensiasi (Konten/Proses/Produk)</option>
+                  <option value="rubrik">Matriks Rubrik Penilaian Proyek / Kinerja</option>
+                  <option value="rapor">Bank Kalimat Narasi Rapor Siswa (Capaian Kompetensi)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="ai-custom-input" class="form-label">Topik Pembelajaran / Nama Siswa:</label>
+                <input type="text" id="ai-custom-input" class="form-control" placeholder="Contoh: Logika Algoritma / Aditya Pratama">
+              </div>
+
+              <button class="btn btn-primary" id="btn-run-ai" style="width: 100%; margin-bottom: 1.25rem;" onclick="AIExportModule.generateAI()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Rancang dengan Asisten AI</span>
+              </button>
+
+              <!-- API Key Settings Card -->
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 0.85rem;">
+                <label for="ai-api-key-input" style="font-size: 0.775rem; font-weight: 700; color: var(--slate-700); display: block; margin-bottom: 4px;">Kunci Google Gemini API (Opsional untuk AI Live):</label>
+                <div style="display: flex; gap: 0.5rem;">
+                  <input type="password" id="ai-api-key-input" class="form-control" style="font-size: 0.8rem;" placeholder="Masukkan API Key Gemini...">
+                  <button class="btn btn-secondary btn-sm" onclick="AIExportModule.saveApiKey()">Simpan</button>
+                </div>
+                <small style="font-size: 0.7rem; color: var(--slate-500); display: block; margin-top: 4px;">
+                  Jika dikosongkan, sistem otomatis menggunakan ratusan bank template cerdas Kurikulum Merdeka bawaan tanpa kuota.
+                </small>
+              </div>
+
+              <!-- Backup & Restore Center -->
+              <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--slate-200);">
+                <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.5rem;">Pusat Cadangan & Pemulihan (Backup/Restore)</h4>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="AIExportModule.exportBackupJSON()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Cadangkan Data (JSON)
+                  </button>
+                  <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="AIExportModule.triggerRestoreFile()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Pulihkan Data
+                  </button>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                  <button class="btn btn-secondary btn-sm" style="width: 100%; border: 1px dashed var(--emerald-500); color: var(--emerald-600);" onclick="AppState.loadFullDemoData(true)" title="Isi ulang data contoh lengkap di semua menu untuk mencoba fitur aplikasi">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>Muat Sampel Data Demo Lengkap</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Output Box -->
+            <div class="ai-output-box">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--emerald-400); text-transform: uppercase; letter-spacing: 0.05em;">Hasil Rancangan AI</span>
+                <button class="btn btn-secondary btn-sm" onclick="AIExportModule.copyAIOutput()">Salin Hasil</button>
+              </div>
+              <div class="ai-output-content" id="ai-output-box-content">Pilih kategori dan tekan "Rancang dengan Asisten AI" untuk menyusun ide pembelajaran atau kalimat narasi rapor.</div>
+            </div>
+          </div>
+
+          <!-- Pusat Cetak PDF Resmi Per Menu (Standalone & Terpisah) -->
+          <div class="dashboard-card" style="margin-top: 1.5rem;">
+            <div class="card-header-flex">
+              <div>
+                <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--emerald-600);"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                  Pusat Cetak Dokumen PDF Resmi Guru (Pemisahan Per-Menu)
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--slate-600); margin-top: 2px;">
+                  Pilih dokumen spesifik untuk dicetak langsung ke PDF standar kedinasan dengan KOP resmi dan lembar pengesahan tanda tangan.
+                </p>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem;">
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;">1. Modul Ajar & RPP</h4>
+                  <p style="font-size: 0.775rem; color: var(--slate-600);">Rekapitulasi seluruh modul Kurikulum Merdeka, alokasi waktu & strategi diferensiasi.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="PrintModule.printLessonPlans()">Cetak Rekap RPP (PDF)</button>
+              </div>
+
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;">2. Buku Nilai Digital</h4>
+                  <p style="font-size: 0.775rem; color: var(--slate-600);">Daftar nilai formatif, sumatif, STS, SAS, predikat capaian & statistik kelas.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="PrintModule.printGradebook()">Cetak Buku Nilai (PDF)</button>
+              </div>
+
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;">3. Bank Soal & Asesmen</h4>
+                  <p style="font-size: 0.775rem; color: var(--slate-600);">Distribusi butir soal LOTS/MOTS/HOTS, ranah Bloom C1-C6 & naskah ujian.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="PrintModule.printQuestionBank()">Cetak Bank Soal (PDF)</button>
+              </div>
+
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;">4. Jadwal & Kalender</h4>
+                  <p style="font-size: 0.775rem; color: var(--slate-600);">Matriks jadwal tatap muka mingguan, alokasi JP & agenda kegiatan akademik.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="PrintModule.printTimetable()">Cetak Jadwal Mengajar (PDF)</button>
+              </div>
+
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;">5. Presensi & Denah Kelas</h4>
+                  <p style="font-size: 0.775rem; color: var(--slate-600);">Rekap kehadiran (H/S/I/A), persentase keaktifan siswa & denah tempat duduk.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="PrintModule.printClassroom()">Cetak Presensi & Denah (PDF)</button>
+              </div>
+
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;">6. Pelacak Koreksi Tugas</h4>
+                  <p style="font-size: 0.775rem; color: var(--slate-600);">Status penilaian tugas siswa, tenggat waktu koreksi & hasil evaluasi kelas.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="PrintModule.printTasks()">Cetak Rekap Tugas (PDF)</button>
+              </div>
+
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;">7. Materi & Sumber Belajar</h4>
+                  <p style="font-size: 0.775rem; color: var(--slate-600);">Katalog media pembelajaran, bahan ajar, modul digital & inventaris LKPD.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="PrintModule.printMaterials()">Cetak Katalog Materi (PDF)</button>
+              </div>
+
+              <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;">8. Dokumen Supervisi Resmi</h4>
+                  <p style="font-size: 0.775rem; color: var(--slate-600);">Instrumen verifikasi kelengkapan administrasi guru pengawas & kepala sekolah.</p>
+                </div>
+                <button class="btn btn-primary btn-sm" style="margin-top: 0.75rem; width: 100%;" onclick="PrintModule.printSupervisi()">Cetak Lembar Supervisi (PDF)</button>
+              </div>
+            </div>
+          </div>
+        </section>

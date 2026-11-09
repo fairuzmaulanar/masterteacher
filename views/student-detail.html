@@ -1,0 +1,118 @@
+        <section class="app-view" id="view-student-detail">
+          <!-- Top Navigation & Action Toolbar -->
+          <div class="toolbar-flex" style="margin-bottom: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <button class="btn btn-secondary btn-sm" onclick="StudentDetailModule.goBack()" title="Kembali ke menu sebelumnya">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <span id="sd-back-btn-label">← Kembali ke Buku Nilai</span>
+              </button>
+              <div style="font-size: 0.825rem; color: var(--slate-500); display: flex; align-items: center; gap: 0.35rem;">
+                <span>Menu /</span>
+                <strong style="color: var(--slate-800);" id="sd-breadcrumb-name">Detail Siswa</strong>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn btn-dark btn-sm" onclick="StudentDetailModule.printCurrentReport()" title="Cetak Rapor Siswa ke PDF Resmi">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak Rapor Siswa (PDF)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Student Header Profile Card -->
+          <div class="card" style="margin-bottom: 1.25rem; padding: 1.25rem; background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 54px; height: 54px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--emerald-500), var(--emerald-700)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; box-shadow: 0 4px 12px rgba(5,150,105,0.35); flex-shrink: 0;" id="sd-avatar">
+                  S
+                </div>
+                <div>
+                  <h2 id="sd-full-name" style="margin: 0; font-size: 1.35rem; font-weight: 800; color: var(--slate-900);">Nama Lengkap Siswa</h2>
+                  <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.35rem; font-size: 0.825rem; color: var(--slate-600); flex-wrap: wrap;">
+                    <span>NISN: <code id="sd-nisn" style="font-weight: 700; color: var(--slate-800);">-</code></span>
+                    <span>•</span>
+                    <span>Rombel: <strong id="sd-class" style="color: var(--emerald-700);">-</strong></span>
+                    <span>•</span>
+                    <span id="sd-gender-badge" class="badge icon-sky" style="padding: 2px 8px; border-radius: 4px;">Laki-Laki</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric KPI Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+            <div class="card" style="background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 1.25rem; text-align: center;">
+              <div style="font-size: 0.775rem; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.05em;">Nilai Akhir Kumulatif</div>
+              <div id="sd-kpi-score" style="font-size: 2.6rem; font-weight: 900; color: var(--emerald-600); margin: 0.35rem 0; line-height: 1;">0</div>
+              <div style="font-size: 0.75rem; color: var(--slate-500);">Komposit Formatif & Sumatif</div>
+            </div>
+            <div class="card" style="background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 1.25rem; text-align: center;">
+              <div style="font-size: 0.775rem; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.05em;">Predikat Capaian</div>
+              <div id="sd-kpi-predicate" style="margin: 0.45rem 0;">
+                <span class="predicate-badge pred-A" style="font-size: 1.5rem; padding: 0.3rem 1.25rem;">A</span>
+              </div>
+              <div id="sd-kpi-predicate-desc" style="font-size: 0.75rem; color: var(--slate-500);">Sangat Baik (Istimewa)</div>
+            </div>
+            <div class="card" style="background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 1.25rem; text-align: center;">
+              <div style="font-size: 0.775rem; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.05em;">Status Kelulusan KKTP (75)</div>
+              <div id="sd-kpi-kktp" style="font-size: 1.6rem; font-weight: 800; color: var(--emerald-600); margin: 0.65rem 0; line-height: 1.1;">TUNTAS</div>
+              <div style="font-size: 0.75rem; color: var(--slate-500);">Kriteria Ketercapaian Tujuan Pembelajaran</div>
+            </div>
+          </div>
+
+          <!-- Score Breakdown & Teacher Feedback Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; align-items: start;">
+            
+            <!-- Left: Score Component Breakdown Table -->
+            <div class="card" style="background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--slate-800); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span>Rincian Komponen Nilai & Evaluasi Ujian</span>
+              </h3>
+              <div class="table-responsive" style="border: 1px solid var(--slate-200); border-radius: var(--radius-md); overflow: hidden;">
+                <table class="data-table" style="margin: 0; font-size: 0.825rem;">
+                  <thead style="background: var(--slate-100);">
+                    <tr>
+                      <th>Komponen Asesmen</th>
+                      <th style="text-align: center; width: 70px;">Skor</th>
+                      <th style="text-align: center; width: 65px;">Bobot</th>
+                      <th style="text-align: center; width: 85px;">Kontribusi</th>
+                      <th>Keterangan Asesmen</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sd-breakdown-tbody">
+                    <!-- Dynamically populated -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Feedback & Anecdotal Notes Editor -->
+            <div class="card" style="background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--slate-800); margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                  <span>Feedback & Catatan Guru</span>
+                </h3>
+                <span id="sd-feedback-status" style="font-size: 0.75rem; color: var(--emerald-600); font-weight: 700; display: none;">Tersimpan!</span>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--slate-600); margin: 0;">
+                Catatan ini akan otomatis dicantumkan pada <strong>Lembar Capaian Nilai Siswa (PDF)</strong> saat dicetak.
+              </p>
+              <textarea id="sd-feedback-textarea" class="form-control" rows="5" style="width: 100%; font-size: 0.85rem; line-height: 1.6; resize: vertical;" placeholder="Tuliskan catatan apresiasi capaian belajar, keaktifan di kelas, catatan perkembangan karakter, atau arahan remedial/pengayaan bagi siswa ini..."></textarea>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem;">
+                <button class="btn btn-secondary btn-sm" onclick="StudentDetailModule.goBack()">
+                  <span>← Kembali</span>
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="StudentDetailModule.saveFeedback()">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  <span>Simpan Catatan Guru</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+

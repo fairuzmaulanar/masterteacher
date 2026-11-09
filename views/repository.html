@@ -1,0 +1,28 @@
+﻿        <section class="app-view" id="view-repository">
+          <div class="toolbar-flex">
+            <div class="filter-group">
+              <input type="text" id="search-material" class="search-input" placeholder="Cari materi pokok atau bab..." oninput="RepositoryModule.filterList()">
+              <select id="filter-material-difficulty" class="select-filter" onchange="RepositoryModule.filterList()">
+                <option value="">Semua Tingkat Kesulitan</option>
+                <option value="Dasar">Dasar (Reguler)</option>
+                <option value="Menengah">Menengah</option>
+                <option value="Pengayaan">Pengayaan / Remedial</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary btn-sm" onclick="PrintModule.printMaterials()" title="Cetak Katalog Materi & Media ke PDF">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak Katalog</span>
+              </button>
+              <button class="btn btn-primary" onclick="RepositoryModule.openAddModal()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>+ Tambah Materi Baru</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Materials Grid -->
+          <div class="material-grid" id="material-list-container">
+            <!-- Dynamically populated -->
+          </div>
+        </section>

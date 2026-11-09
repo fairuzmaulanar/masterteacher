@@ -1,0 +1,45 @@
+﻿        <section class="app-view" id="view-tasks">
+          <div class="task-workload-grid">
+            <!-- Left: Marking Tracker -->
+            <div>
+              <div class="toolbar-flex">
+                <h3 style="font-size: 1.05rem; font-weight: 700;">Pelacak Koreksi Tugas & Ujian</h3>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-secondary btn-sm" onclick="PrintModule.printTasks()" title="Cetak Rekap Koreksi & Evaluasi Siswa ke PDF">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>Cetak Tugas</span>
+                  </button>
+                  <button class="btn btn-primary btn-sm" onclick="TaskModule.openAddTaskModal()">+ Tambah Agenda Koreksi</button>
+                </div>
+              </div>
+              <div id="marking-tasks-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Right: Meeting Notes & Reflection Journal -->
+            <div>
+              <!-- Meeting Notes -->
+              <div class="dashboard-card" style="margin-bottom: 1.25rem;">
+                <div class="card-header-flex">
+                  <h3>Notulensi Rapat Dinas / MGMP</h3>
+                  <button class="btn btn-secondary btn-sm" onclick="TaskModule.openAddMeetingModal()">+ Notulen Baru</button>
+                </div>
+                <div id="meetings-list">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+
+              <!-- Teaching Reflection -->
+              <div class="dashboard-card">
+                <div class="card-header-flex">
+                  <h3>Jurnal Refleksi Mengajar Harian</h3>
+                  <button class="btn btn-secondary btn-sm" onclick="TaskModule.openAddReflectionModal()">+ Tulis Refleksi</button>
+                </div>
+                <div id="reflections-list">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>

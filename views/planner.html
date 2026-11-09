@@ -1,0 +1,25 @@
+﻿        <section class="app-view" id="view-planner">
+          <div class="toolbar-flex">
+            <div class="filter-group">
+              <input type="text" id="search-rpp" class="search-input" placeholder="Cari materi pokok atau tujuan..." oninput="PlannerModule.filterList()">
+              <select id="filter-rpp-class" class="select-filter" onchange="PlannerModule.filterList()">
+                <option value="">Semua Kelas</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary btn-sm" onclick="PrintModule.printLessonPlans()" title="Cetak Rekapitulasi Modul Ajar ke PDF">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak Rekap RPP</span>
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="PlannerModule.openAddModal()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>+ Buat Modul Ajar Baru</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- RPP Cards Grid -->
+          <div class="rpp-grid" id="rpp-list-container">
+            <!-- Dynamically populated -->
+          </div>
+        </section>

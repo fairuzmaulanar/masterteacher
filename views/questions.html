@@ -1,0 +1,113 @@
+﻿        <section class="app-view" id="view-questions">
+          <div class="toolbar-flex">
+            <div class="view-tabs">
+              <button class="view-tab active" data-qtab="bank" onclick="QuestionBankModule.switchTab('bank')">Bank Soal Guru</button>
+              <button class="view-tab" data-qtab="packages" onclick="QuestionBankModule.switchTab('packages')">Paket Ujian & Kuis</button>
+              <button class="view-tab" data-qtab="ai-generator" onclick="QuestionBankModule.switchTab('ai-generator')">AI Question Generator</button>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="PrintModule.printQuestionBank()" title="Cetak Distribusi Bank Soal & Butir Soal ke PDF">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak Bank Soal</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="QuestionBankModule.openGeneratePackageModal()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span>Generator Paket</span>
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="QuestionBankModule.openAddQuestionModal()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>+ Buat Soal</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pane 1: Question Bank List -->
+          <div id="qsec-bank" style="margin-top: 1rem;">
+            <div style="background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 0.85rem 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--slate-700);">Filter Taksonomi Bloom:</span>
+                <select id="filter-bloom" class="select-filter" onchange="QuestionBankModule.filterList()">
+                  <option value="">Semua Tingkat Kognitif</option>
+                  <option value="LOTS">LOTS (C1-C2 Mengingat & Memahami)</option>
+                  <option value="MOTS">MOTS (C3 Menerapkan)</option>
+                  <option value="HOTS">HOTS (C4-C6 Analisis, Evaluasi & Kreasi)</option>
+                </select>
+                <select id="filter-qtype" class="select-filter" onchange="QuestionBankModule.filterList()">
+                  <option value="">Semua Format Soal</option>
+                  <option value="Pilihan Ganda">Pilihan Ganda</option>
+                  <option value="Esai">Esai / Uraian</option>
+                  <option value="Benar/Salah">Benar / Salah</option>
+                </select>
+              </div>
+              <span id="qbank-count-indicator" style="font-size: 0.8rem; font-weight: 700; color: var(--emerald-700);"></span>
+            </div>
+
+            <div id="questions-list-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Pane 2: Assessment Packages -->
+          <div id="qsec-packages" style="display: none; margin-top: 1rem;">
+            <div id="assessment-packages-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Pane 3: AI Question Generator -->
+          <div id="qsec-ai-generator" style="display: none; margin-top: 1rem;">
+            <div class="ai-hub-container">
+              <div class="ai-prompt-box">
+                <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem;">AI Assessment & Question Generator</h3>
+                <p style="font-size: 0.8rem; color: var(--slate-600); margin-bottom: 1.25rem;">
+                  Hasilkan paket soal otomatis secara instan lengkap dengan stimulus, opsi jawaban, pembahasan, dan klasifikasi Bloom berdasarkan topik pembelajaran.
+                </p>
+                <div class="form-group">
+                  <label for="ai-gen-material-select" class="form-label">Pilih Materi Sumber:</label>
+                  <select id="ai-gen-material-select" class="form-control" onchange="QuestionBankModule.onAIMaterialSelect(this.value)"></select>
+                </div>
+                <div class="form-group">
+                  <label for="ai-gen-topic" class="form-label">Topik / Capaian Pembelajaran (TP):</label>
+                  <input type="text" id="ai-gen-topic" class="form-control" placeholder="Contoh: Logika Algoritma & Flowchart">
+                </div>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="ai-gen-level" class="form-label">Target Fase / Kognitif Kurikulum Merdeka:</label>
+                    <select id="ai-gen-level" class="form-control">
+                      <option value="HOTS">HOTS (C4-C6 Penalaran Analitis & Kreasi)</option>
+                      <option value="MOTS">MOTS (C3 Aplikasi & Penerapan Logika)</option>
+                      <option value="LOTS">LOTS (C1-C2 Pemahaman Dasar & Literasi)</option>
+                      <option value="SD-A">Jenjang SD - Fase A (Literasi & Numerasi Dasar)</option>
+                      <option value="SD-BC">Jenjang SD - Fase B & C (IPAS & Konsep)</option>
+                      <option value="SMP-D">Jenjang SMP - Fase D (Informatika & Sains)</option>
+                      <option value="SMA-E">Jenjang SMA - Fase E (MIPA & IPS Fondasi)</option>
+                      <option value="SMA-F">Jenjang SMA - Fase F (Peminatan Tingkat Lanjut)</option>
+                      <option value="P5">Projek Kokurikuler P5 (Profil Pelajar Pancasila)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="ai-gen-count" class="form-label">Jumlah Soal:</label>
+                    <select id="ai-gen-count" class="form-control">
+                      <option value="3">3 Soal</option>
+                      <option value="5" selected>5 Soal</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="btn btn-primary" id="btn-run-ai-questions" style="width: 100%;" onclick="QuestionBankModule.runAIQuestionGenerator()">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                  <span>Hasilkan Soal dengan Asisten AI</span>
+                </button>
+              </div>
+
+              <div class="ai-output-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                  <span style="font-size: 0.8rem; font-weight: 700; color: var(--emerald-400); text-transform: uppercase;">Draf Soal Tersusun</span>
+                  <button class="btn btn-primary btn-sm" id="btn-save-ai-questions" onclick="QuestionBankModule.saveAIQuestionsToBank()" style="display: none;">
+                    + Masukkan ke Bank Soal
+                  </button>
+                </div>
+                <div class="ai-output-content" id="ai-questions-output-content">Tekan tombol 'Hasilkan Soal dengan Asisten AI' untuk membuat draf soal terstruktur.</div>
+              </div>
+            </div>
+          </div>
+        </section>

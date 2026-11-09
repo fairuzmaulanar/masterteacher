@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Teacher Planner - Perencana & Asisten Administrasi Guru Profesional</title>
+  <meta name="description" content="Aplikasi perencana pembelajaran guru lengkap dengan modul ajar RPP, jadwal mengajar, buku nilai digital, absensi, denah tempat duduk, pelacak koreksi tugas, dan asisten AI Kurikulum Merdeka.">
+  <meta name="theme-color" content="#059669">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TeacherPlanner">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="auth-screen" class="auth-screen" style="display: none;">
+    <!-- Top Bar with Centered Pill & Theme Toggle -->
+    <div class="auth-top-bar">
+      <div class="auth-top-bar-inner">
+        <div class="auth-badge-pill">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span>Kurikulum Merdeka • Sistem Offline Mandiri</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm btn-theme-toggle" onclick="ThemeManager.toggleTheme()" title="Ubah Mode Gelap / Terang">
+          <svg class="auth-theme-moon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          <svg class="auth-theme-sun" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <span class="auth-theme-label" id="auth-theme-label">Mode Gelap</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="auth-container">
+      <div class="auth-card">
+        
+        <!-- Brand Header -->
+        <div class="auth-header">
+          <div class="auth-logo">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <h2>Master Teacher Planner</h2>
+          <p>Digital Workspace & Asisten Administrasi Guru Profesional</p>
+        </div>
+
+        <!-- Pilihan Download / Pasang PWA Sebelum Masuk Login -->
+        <div class="auth-pwa-choice-card" id="auth-pwa-choice-card">
+          <div class="auth-pwa-choice-header">
+            <div class="auth-pwa-choice-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            </div>
+            <div class="auth-pwa-choice-title-wrap">
+              <div class="auth-pwa-choice-title">Pasang di HP atau Komputer</div>
+              <span class="auth-pwa-choice-badge">100% Offline Mandiri</span>
+            </div>
+          </div>
+
+          <!-- Badges Kompatibilitas Multi-Perangkat -->
+          <div class="auth-pwa-device-pills">
+            <span class="pwa-device-pill">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              <span>Android</span>
+            </span>
+            <span class="pwa-device-pill">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>
+              <span>iOS (iPhone/iPad)</span>
+            </span>
+            <span class="pwa-device-pill">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <span>Komputer / Laptop</span>
+            </span>
+          </div>
+
+          <!-- Narasi Rapi Bebas Teks Teknis -->
+          <p class="auth-pwa-choice-narrative">
+            Aplikasi dapat dipasang langsung ke layar utama perangkat Anda tanpa perlu download file APK/EXE. Akses lebih cepat, praktis, dan dapat digunakan 100% secara offline tanpa kuota internet.
+          </p>
+
+          <!-- Tombol Aksi Pasang PWA -->
+          <button type="button" class="btn btn-emerald btn-block btn-pwa-action" id="btn-auth-pwa-install" onclick="PWAManager.promptInstall()" title="Pasang Master Teacher Planner di perangkat Anda">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span id="btn-auth-pwa-label">Download / Pasang di HP atau Komputer</span>
+          </button>
+        </div>
+
+        <!-- Pemisah Pilihan Sebelum Masuk Login -->
+        <div class="auth-choice-divider">
+          <span>atau lanjut masuk ke akun guru</span>
+        </div>
+
+        <!-- Auth Mode Tabs -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab-btn active" id="tab-btn-login" onclick="AuthManager.switchAuthTab('login')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+            <span>Masuk Profil</span>
+          </button>
+          <button type="button" class="auth-tab-btn" id="tab-btn-register" onclick="AuthManager.switchAuthTab('register')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+            <span>Daftar Guru Baru</span>
+          </button>
+        </div>
+
+        <!-- TAB 1: FORM LOGIN PROFIL GURU -->
+        <div class="auth-tab-pane active" id="pane-auth-login">
+          <form id="form-login-teacher" onsubmit="AuthManager.handleLogin(event)">
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+                <label for="login-email-input" class="form-label" style="margin-bottom:0;">Alamat Email Guru:</label>
+                <span class="auth-hint-text">Demo: <strong>guru.demo@sekolah.id</strong></span>
+              </div>
+              <input type="text" id="login-email-input" class="form-control" placeholder="Masukkan email guru atau NIP" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+                <label for="login-password-input" class="form-label" style="margin-bottom:0;">Kata Sandi (Password):</label>
+                <span class="auth-hint-text">Sandi Demo: <strong>1234</strong></span>
+              </div>
+              <div class="pin-input-wrap">
+                <input type="password" id="login-password-input" class="form-control" placeholder="Masukkan kata sandi" maxlength="32" required autocomplete="current-password">
+                <button type="button" class="btn-toggle-pin" onclick="AuthManager.togglePinVisibility('login-password-input')" title="Lihat/Sembunyikan Sandi">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-actions">
+              <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-submit">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                <span>Masuk ke Workspace Guru</span>
+              </button>
+
+              <div class="auth-divider">
+                <span>atau</span>
+              </div>
+
+              <button type="button" class="btn btn-secondary btn-block" id="btn-quick-demo" onclick="AuthManager.quickDemoLogin()" title="Masuk langsung ke akun percontohan Budi Pratama, S.Pd.">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--amber-500);"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Masuk Cepat sebagai Guru Demo</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TAB 2: FORM REGISTRASI GURU BARU -->
+        <div class="auth-tab-pane" id="pane-auth-register" style="display:none;">
+          <form id="form-register-teacher" onsubmit="AuthManager.handleRegister(event)">
+            <div class="form-group">
+              <label for="reg-teacher-nama" class="form-label">Nama Lengkap & Gelar: *</label>
+              <input type="text" id="reg-teacher-nama" class="form-control" placeholder="Contoh: Dra. Siti Nurhaliza, M.Pd." required>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-teacher-email" class="form-label">Alamat Email Guru: *</label>
+              <input type="email" id="reg-teacher-email" class="form-control" placeholder="Contoh: siti.nurhaliza@sekolah.id" required>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="reg-teacher-nip" class="form-label">NIP / NUPTK:</label>
+                <input type="text" id="reg-teacher-nip" class="form-control" placeholder="19850101 201001 2 001">
+              </div>
+              <div class="form-group">
+                <label for="reg-teacher-mapel" class="form-label">Mata Pelajaran Utama: *</label>
+                <input type="text" id="reg-teacher-mapel" class="form-control" placeholder="Contoh: Matematika" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-teacher-sekolah" class="form-label">Nama Sekolah / Madrasah: *</label>
+              <input type="text" id="reg-teacher-sekolah" class="form-control" placeholder="Contoh: SMA Negeri 1 Maju Jaya" required>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-teacher-pin" class="form-label">Buat Kata Sandi / Password: *</label>
+              <div class="pin-input-wrap">
+                <input type="password" id="reg-teacher-pin" class="form-control" placeholder="Minimal 4 karakter (contoh: 1234)" maxlength="32" required>
+                <button type="button" class="btn-toggle-pin" onclick="AuthManager.togglePinVisibility('reg-teacher-pin')" title="Lihat/Sembunyikan Sandi">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:0.65rem; background:linear-gradient(135deg, rgba(16,185,129,0.06), rgba(6,182,212,0.04)); border:1px dashed rgba(16,185,129,0.35); border-radius:var(--radius-md); padding:0.75rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+                <label for="reg-teacher-gas-url" class="form-label" style="margin-bottom:0; font-size:0.775rem; font-weight:700;">
+                  <span style="color:var(--emerald-600);">☁️</span> Tautan Database Google Sheets (Opsional):
+                </label>
+                <span id="reg-cloud-status-badge" style="font-size:0.65rem; font-weight:700; color:var(--slate-500);">Opsional</span>
+              </div>
+              <input type="url" id="reg-teacher-gas-url" class="form-control" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:0.75rem; padding:0.45rem 0.65rem;">
+              <div style="font-size:0.7rem; color:var(--slate-500); margin-top:0.35rem; line-height:1.35;">
+                Jika diisi, akun guru dan data Anda langsung tersambung dan disimpan ke Google Spreadsheet Anda.
+              </div>
+            </div>
+
+            <div class="auth-actions">
+              <button type="submit" class="btn btn-primary btn-block btn-lg">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                <span>Daftar & Buka Workspace Baru</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="auth-footer">
+          <span>Data tersimpan privat & aman di browser perangkat Anda (Client-Side Storage).</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="app-root" style="display: none;">
+
+    <!-- ====================================================================
+         Desktop Sidebar Navigation
+         ==================================================================== -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+        </div>
+        <div class="brand-meta">
+          <h1>Teacher Planner</h1>
+          <span>Master Guru v1.0</span>
+        </div>
+        <!-- Mobile Drawer Close Button -->
+        <button class="sidebar-close-btn" id="btn-sidebar-close" aria-label="Tutup Menu" onclick="Navigation.closeMobileSidebar()">&times;</button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Menu Utama</div>
+        <button class="nav-link active" data-view="view-dashboard" onclick="Navigation.switchView('view-dashboard')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-link" data-view="view-planner" onclick="Navigation.switchView('view-planner')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span>Modul & RPP</span>
+          <span class="badge" id="sidebar-badge-rpp">2</span>
+        </button>
+
+        <button class="nav-link" data-view="view-repository" onclick="Navigation.switchView('view-repository')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          <span>Materi & Media</span>
+          <span class="badge" id="sidebar-badge-materials">2</span>
+        </button>
+
+        <button class="nav-link" data-view="view-questions" onclick="Navigation.switchView('view-questions')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+          <span>Bank Soal & Asesmen</span>
+          <span class="badge" id="sidebar-badge-questions">8</span>
+        </button>
+
+        <button class="nav-link" data-view="view-timetable" onclick="Navigation.switchView('view-timetable')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <span>Jadwal & Kalender</span>
+        </button>
+
+        <button class="nav-link" data-view="view-gradebook" onclick="Navigation.switchView('view-gradebook')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          <span>Buku Nilai Digital</span>
+        </button>
+
+        <div class="nav-section-title">Pengelolaan Kelas</div>
+        <button class="nav-link" data-view="view-classroom" onclick="Navigation.switchView('view-classroom')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          <span>Kelas & Absensi</span>
+        </button>
+
+        <button class="nav-link" data-view="view-tasks" onclick="Navigation.switchView('view-tasks')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <span>Koreksi & Tugas Guru</span>
+        </button>
+
+        <div class="nav-section-title">Kecerdasan & Ekspor</div>
+        <button class="nav-link" data-view="view-ai-export" onclick="Navigation.switchView('view-ai-export')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Asisten AI & Ekspor</span>
+        </button>
+
+        <div class="nav-section-title">Pengaturan</div>
+        <button class="nav-link" data-view="view-school-profile" id="nav-btn-school-settings" onclick="Navigation.switchView('view-school-profile')" title="Kustomisasi Profil Sekolah & Logo KOP">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          <span>Profil & Logo Sekolah</span>
+        </button>
+        <button class="nav-link" id="nav-btn-cloud-sync" onclick="CloudDBManager.openSyncModal()" title="Koneksi & Sinkronisasi Database Google Sheets">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          <span>Database Google Sheets</span>
+          <span class="badge" id="sidebar-badge-cloud" style="background:var(--slate-400); color:#fff; font-size:0.65rem; padding:1px 6px;">Offline</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Teacher Profile Card & Logout -->
+      <div class="sidebar-footer">
+        <div class="user-card" onclick="AuthManager.openSwitchModal()" title="Klik untuk beralih profil guru">
+          <div class="avatar-circle bind-avatar-initial">B</div>
+          <div class="user-info">
+            <div class="user-name bind-user-name">Memuat profil...</div>
+            <div class="user-role bind-school-name">Memuat sekolah...</div>
+          </div>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--slate-400);"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/></svg>
+        </div>
+        <div class="sidebar-footer-actions" style="display: flex; gap: 0.35rem; margin-top: 0.5rem;">
+          <button class="btn btn-ghost btn-xs" onclick="Navigation.switchView('view-school-profile')" title="Pengaturan Identitas & Logo KOP" style="flex: 1; justify-content: center; font-size: 0.725rem;">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Atur Logo</span>
+          </button>
+          <button class="btn btn-ghost btn-xs btn-logout" onclick="AuthManager.logout()" title="Keluar dari akun guru" style="flex: 1; justify-content: center; font-size: 0.725rem;">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            <span>Keluar</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Drawer Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="Navigation.closeMobileSidebar()"></div>
+
+    <!-- ====================================================================
+         Main App Content Area
+         ==================================================================== -->
+    <main class="app-main">
+      <!-- Sticky Top Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="btn-mobile-toggle" aria-label="Buka Menu" onclick="Navigation.toggleMobileSidebar()">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="page-title-wrap">
+            <h2 id="header-dynamic-title">Dashboard Guru</h2>
+            <p><span class="bind-user-name">Guru</span> • <span class="bind-school-name">Sekolah</span></p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- Theme Toggle Button (Dark / Light Mode) -->
+          <button class="btn btn-secondary btn-sm btn-theme-toggle" id="btn-theme-toggle" onclick="ThemeManager.toggleTheme()" title="Ubah Mode Gelap / Terang">
+            <svg id="theme-icon-moon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            <svg id="theme-icon-sun" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <span class="theme-label-text" id="theme-toggle-label">Mode Gelap</span>
+          </button>
+          <button class="btn btn-secondary btn-sm btn-header-extra" onclick="Navigation.switchView('view-school-profile')" title="Pengaturan Profil Sekolah & Logo KOP">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            <span>Sekolah & Logo</span>
+          </button>
+          <button class="btn btn-secondary btn-sm btn-header-extra" onclick="Navigation.switchView('view-ai-export')">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>Asisten AI</span>
+          </button>
+          <button class="btn btn-secondary btn-sm btn-header-extra" id="btn-header-pwa-install" onclick="PWAManager.promptInstall()" title="Pasang aplikasi di HP atau Komputer" style="display:none;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span id="btn-header-pwa-label">Pasang App</span>
+          </button>
+          <button class="btn btn-dark btn-sm" id="btn-header-print" onclick="PrintModule.printCurrentMenu()" title="Cetak Dokumen Sesuai Menu Aktif">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            <span id="btn-header-print-label">Cetak Ringkasan</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Page Body -->
+      <div class="page-body">
+
+        <section class="app-view active" id="view-dashboard">
+          <!-- 4-Column Stat Grid -->
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <span>Modul & RPP</span>
+                <h3 id="stat-total-rpp">0</h3>
+                <p>Perencanaan aktif</p>
+              </div>
+              <div class="stat-icon-wrapper icon-emerald">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <span>Total Siswa</span>
+                <h3 id="stat-total-students">0</h3>
+                <p>Tersebar di seluruh kelas</p>
+              </div>
+              <div class="stat-icon-wrapper icon-sky">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <span>Tumpukan Koreksi</span>
+                <h3 id="stat-pending-grading">0 Berkas</h3>
+                <p>Tugas belum diperiksa</p>
+              </div>
+              <div class="stat-icon-wrapper icon-amber">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <span>Kehadiran Hari Ini</span>
+                <h3 id="stat-attendance-rate">100%</h3>
+                <p>Rata-rata presensi kelas</p>
+              </div>
+              <div class="stat-icon-wrapper icon-indigo">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Bar -->
+          <div class="quick-action-strip">
+            <button class="quick-btn" onclick="PlannerModule.openAddModal()">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Buat Modul RPP</span>
+            </button>
+            <button class="quick-btn" onclick="Navigation.switchView('view-classroom')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+              <span>Buka Absen Kelas</span>
+            </button>
+            <button class="quick-btn" onclick="Navigation.switchView('view-gradebook')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              <span>Input Nilai Siswa</span>
+            </button>
+            <button class="quick-btn" onclick="TaskModule.openAddTaskModal()">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>+ Catat Koreksi Tugas</span>
+            </button>
+          </div>
+
+          <!-- 2-Column Main Dashboard Section -->
+          <div class="dashboard-main-grid">
+            <!-- Left: Today's Teaching Schedule -->
+            <div class="dashboard-card">
+              <div class="card-header-flex">
+                <h3>
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--emerald-600);"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Jadwal Mengajar Hari Ini
+                </h3>
+                <button class="btn btn-ghost btn-sm" onclick="Navigation.switchView('view-timetable')">Lihat Semua Jadwal &rarr;</button>
+              </div>
+              <div id="dash-schedule-list">
+                <!-- Dynamically loaded -->
+              </div>
+            </div>
+
+            <!-- Right: Urgent Tasks & Marking Workload -->
+            <div class="dashboard-card">
+              <div class="card-header-flex">
+                <h3>
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--amber-500);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                  Pelacak Tumpukan Koreksi
+                </h3>
+                <button class="btn btn-ghost btn-sm" onclick="Navigation.switchView('view-tasks')">Kelola &rarr;</button>
+              </div>
+              <div id="dash-urgent-tasks">
+                <!-- Dynamically loaded -->
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Workspace Footer Guru (Tampilan Resmi & Terpadu) -->
+        <footer class="app-workspace-footer">
+          <div class="workspace-footer-left">
+            <span class="footer-dot-live"></span>
+            <span>Master Teacher Planner v1.9.0 • Local-First Digital Workspace</span>
+          </div>
+          <div class="workspace-footer-right">
+            <span>Standar Resmi Kurikulum Merdeka Kemendikbudristek • Data Privat di Perangkat</span>
+          </div>
+        </footer>
+
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         Mobile Bottom Navigation Bar (5 Touch Items)
+         ==================================================================== -->
+    <nav class="mobile-bottom-bar" id="mobile-bottom-bar">
+      <button class="bottom-nav-item active" data-view="view-dashboard" onclick="Navigation.switchView('view-dashboard')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="bottom-nav-item" data-view="view-planner" onclick="Navigation.switchView('view-planner')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span>Modul RPP</span>
+      </button>
+      <button class="bottom-nav-item" data-view="view-gradebook" onclick="Navigation.switchView('view-gradebook')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span>Nilai</span>
+      </button>
+      <button class="bottom-nav-item" data-view="view-classroom" onclick="Navigation.switchView('view-classroom')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <span>Kelas</span>
+      </button>
+      <button class="bottom-nav-item bottom-nav-more" id="btn-bottom-nav-more" onclick="Navigation.toggleMobileSidebar()" title="Buka Semua Menu Fitur">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <span>Menu Lain</span>
+      </button>
+    </nav>
+
+  </div>
+  <!-- Modals Container (Loaded on-demand via ViewLoader) -->
+  <div id="modals-container"></div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Hidden File Input for JSON Restore -->
+  <input type="file" id="input-restore-json" accept=".json" style="display: none;" onchange="AIExportModule.handleRestoreJSON(event)">
+
+  <!-- Dedicated Isolated Print Container (100% per-menu PDF separation) -->
+  <div id="print-container" class="print-container" style="display: none;"></div>
+
+  <!-- Modular Templates & Modals (Pre-cached in memory for CORS-free file:// and http:// execution) -->
+  <script src="views/templates.js"></script>
+  <script src="modals/modals.js"></script>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

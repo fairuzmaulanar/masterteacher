@@ -1,0 +1,17 @@
+# OS & Sistem File
+.DS_Store
+Thumbs.db
+*.log
+desktop.ini
+
+# File Pengujian Sementara
+check_*.ps1
+test_*.ps1
+test_*.js
+test_*.html
+*.tmp
+
+# Editor
+.vscode/
+.idea/
+

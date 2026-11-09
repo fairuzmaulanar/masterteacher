@@ -1,0 +1,99 @@
+﻿        <section class="app-view active" id="view-dashboard">
+          <!-- 4-Column Stat Grid -->
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <span>Modul & RPP</span>
+                <h3 id="stat-total-rpp">0</h3>
+                <p>Perencanaan aktif</p>
+              </div>
+              <div class="stat-icon-wrapper icon-emerald">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <span>Total Siswa</span>
+                <h3 id="stat-total-students">0</h3>
+                <p>Tersebar di seluruh kelas</p>
+              </div>
+              <div class="stat-icon-wrapper icon-sky">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <span>Tumpukan Koreksi</span>
+                <h3 id="stat-pending-grading">0 Berkas</h3>
+                <p>Tugas belum diperiksa</p>
+              </div>
+              <div class="stat-icon-wrapper icon-amber">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <span>Kehadiran Hari Ini</span>
+                <h3 id="stat-attendance-rate">100%</h3>
+                <p>Rata-rata presensi kelas</p>
+              </div>
+              <div class="stat-icon-wrapper icon-indigo">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Bar -->
+          <div class="quick-action-strip">
+            <button class="quick-btn" onclick="PlannerModule.openAddModal()">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Buat Modul RPP</span>
+            </button>
+            <button class="quick-btn" onclick="Navigation.switchView('view-classroom')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+              <span>Buka Absen Kelas</span>
+            </button>
+            <button class="quick-btn" onclick="Navigation.switchView('view-gradebook')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              <span>Input Nilai Siswa</span>
+            </button>
+            <button class="quick-btn" onclick="TaskModule.openAddTaskModal()">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>+ Catat Koreksi Tugas</span>
+            </button>
+          </div>
+
+          <!-- 2-Column Main Dashboard Section -->
+          <div class="dashboard-main-grid">
+            <!-- Left: Today's Teaching Schedule -->
+            <div class="dashboard-card">
+              <div class="card-header-flex">
+                <h3>
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--emerald-600);"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Jadwal Mengajar Hari Ini
+                </h3>
+                <button class="btn btn-ghost btn-sm" onclick="Navigation.switchView('view-timetable')">Lihat Semua Jadwal &rarr;</button>
+              </div>
+              <div id="dash-schedule-list">
+                <!-- Dynamically loaded -->
+              </div>
+            </div>
+
+            <!-- Right: Urgent Tasks & Marking Workload -->
+            <div class="dashboard-card">
+              <div class="card-header-flex">
+                <h3>
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--amber-500);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                  Pelacak Tumpukan Koreksi
+                </h3>
+                <button class="btn btn-ghost btn-sm" onclick="Navigation.switchView('view-tasks')">Kelola &rarr;</button>
+              </div>
+              <div id="dash-urgent-tasks">
+                <!-- Dynamically loaded -->
+              </div>
+            </div>
+          </div>
+        </section>

@@ -1,0 +1,53 @@
+        <section class="app-view" id="view-timetable">
+          <div class="toolbar-flex">
+            <div class="view-tabs">
+              <button class="view-tab active" data-tab="weekly" onclick="TimetableModule.switchTab('weekly')">Jadwal Mengajar Mingguan</button>
+              <button class="view-tab" data-tab="calendar" onclick="TimetableModule.switchTab('calendar')">Kalender Akademik</button>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="PrintModule.printTimetable()" title="Cetak Jadwal Pelajaran Mingguan ke PDF">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak Jadwal</span>
+              </button>
+              <button class="btn btn-primary btn-sm" id="btn-add-schedule" onclick="TimetableModule.openAddModal()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>+ Tambah Jadwal Mengajar</span>
+              </button>
+              <button class="btn btn-primary btn-sm" id="btn-add-calendar-event" onclick="TimetableModule.openAddEventModal()" style="display: none;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>+ Tambah Agenda Baru</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Weekly Matrix -->
+          <div id="timetable-weekly-sec" class="timetable-container">
+            <table class="timetable-grid">
+              <thead>
+                <tr>
+                  <th>Hari</th>
+                  <th>Jadwal Sesi & Ruangan Kelas</th>
+                </tr>
+              </thead>
+              <tbody id="weekly-timetable-rows">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Academic Calendar Section -->
+          <div id="timetable-calendar-sec" style="display: none; margin-top: 1rem;">
+            <div class="dashboard-card">
+              <div class="card-header-flex">
+                <h3>Agenda & Kalender Akademik Sekolah</h3>
+                <button class="btn btn-primary btn-sm" onclick="TimetableModule.openAddEventModal()">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                  <span>+ Tambah Agenda Baru</span>
+                </button>
+              </div>
+              <div id="academic-events-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </section>

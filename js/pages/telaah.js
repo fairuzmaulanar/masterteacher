@@ -1,7 +1,7 @@
 // Telaah & persetujuan RPP oleh kepala sekolah: pratinjau dokumen, rubrik supervisi, catatan, tanda tangan PIN.
 import { ic } from '../core/icons.js';
 import { esc, toast, modal, fmtTgl } from '../core/util.js';
-import { S, isDemo } from '../core/state.js';
+import { S } from '../core/state.js';
 import { db } from '../core/store.js';
 import { api } from '../core/api.js';
 import { delegasi, emptyState, skeleton, avatarWarna } from '../core/ui.js';
@@ -24,8 +24,7 @@ export default {
     el.innerHTML = skeleton(3);
     let r;
     try {
-      if (isDemo()) { const x = db.get('RPP', ctx.params.id); if (!x) throw new Error('RPP tidak ditemukan.'); r = Object.assign({}, x, { guru: { nama: S.user.nama, nip: S.user.nip }, kelas: namaKelas(x.kelas_id), mapel: namaMapel(x.mapel_id), fase: (db.get('Kelas', x.kelas_id) || {}).fase }); }
-      else r = (await api('sekolah.rpp.get', { id: ctx.params.id })).data;
+      r = (await api('sekolah.rpp.get', { id: ctx.params.id })).data;
     } catch (e) { el.innerHTML = `<div class="card">${emptyState({ icon: 'alert', title: 'RPP tidak dapat dibuka', text: e.message, action: '<a class="btn btn-primary" href="#/sekolah?tab=telaah">Kembali</a>' })}</div>`; return; }
     const i = r.isi || {};
     const { cek, skor } = skorKepatuhan(r);
@@ -35,7 +34,7 @@ export default {
     const ul = (a) => `<ul>${(a || []).filter(Boolean).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
     el.innerHTML = `<div class="page-h"><div><div class="crumbs"><a href="#/sekolah?tab=telaah">Antrean Telaah</a>${ic('chevr', 'ic-s')}<b>${esc(r.guru.nama)}</b></div>
       <h1>Telaah RPP Pembelajaran Mendalam</h1><p class="sub"><span class="badge ${sudah ? 'b-gr' : r.status === 'revisi' ? 'b-qs' : 'b-mt'}">${sudah ? 'Disetujui' : r.status === 'revisi' ? 'Dikembalikan untuk revisi' : 'Draf menunggu persetujuan KS'}</span> Versi ${esc(r.versi || 1)} · diajukan ${fmtTgl(Number(r.updated_at) || Date.now(), 'tanpa-hari')} · ${esc(s.nama || '')}</p></div>
-      <div class="row row-wrap"><div class="card card-s row" style="padding:.5rem .9rem"><span class="kpi-v" style="font-size:1.4rem;color:${skor >= 90 ? 'var(--green)' : 'var(--amber)'}">${skor}%</span><span class="tiny muted">Kepatuhan<br>standar</span></div>
+      <div class="row row-wrap"><div class="card card-s row" style="padding:.5rem .9rem"><span class="kpi-v" style="font-size:1.4rem;color:${skor >= 90 ? 'var(--gr)' : 'var(--qs)'}">${skor}%</span><span class="tiny muted">Kepatuhan<br>standar</span></div>
       ${sudah ? (r.dok_kode || (r.dokumen && r.dokumen.kode) ? `<a class="btn btn-white" href="#/verifikasi/${esc(r.dok_kode || r.dokumen.kode)}">${ic('qr', 'ic-s')}Lihat verifikasi</a>` : '') : `<button class="btn btn-white" data-act="revisi">${ic('edit', 'ic-s')}Minta revisi</button><button class="btn btn-primary" data-act="setuju">${ic('sign', 'ic-s')}Setujui & TTD digital</button>`}</div></div>
     <div class="split-8"><article class="paper">
       <div class="row between tiny muted" style="margin-bottom:1rem"><span>Lembar kerja guru (A4/F4)</span><span>Permendikdasmen No. 1/2026</span></div>
@@ -67,15 +66,13 @@ export default {
       const catatan = f.catatan.value.trim();
       if (keputusan === 'revisi' && catatan.length < 10) { toast('Tuliskan catatan revisi yang jelas untuk guru.', 'err'); f.catatan.focus(); return; }
       let pin = '';
-      if (keputusan === 'setuju' && !isDemo()) {
+      if (keputusan === 'setuju') {
         const p = await modal({ title: 'Tanda tangan elektronik', body: `<p class="small muted" style="margin-bottom:.75rem">Masukkan PIN 6 digit Anda. Belum punya PIN? Atur di Pengaturan → Keamanan.</p><input class="input" type="password" name="pin" inputmode="numeric" maxlength="6" autocomplete="off" autofocus style="font-size:1.5rem;letter-spacing:.5em;text-align:center">`, actions: [{ label: 'Batal', value: null, cls: 'btn-ghost' }, { label: 'Setujui & tandatangani', value: 'ok', cls: 'btn-primary', validate: (x) => (!/^\d{6}$/.test(x.pin) ? 'PIN harus 6 digit.' : '') }] });
         if (p.value !== 'ok') return;
         pin = p.form.pin;
       }
       try {
-        if (isDemo()) db.put('RPP', r.id, { status: keputusan === 'setuju' ? 'disetujui' : 'revisi', telaah: { keputusan: keputusan === 'setuju' ? 'disetujui' : 'revisi', catatan, rubrik: v, skor: tot, oleh: S.user.nama, waktu: new Date().toISOString() } });
-        else { const res = await api('sekolah.rpp.review', { id: r.id, keputusan, catatan, rubrik: v, skor: tot, pin }); toast(res.message); }
-        if (isDemo()) toast(keputusan === 'setuju' ? 'RPP disetujui (simulasi demo).' : 'Catatan revisi dikirim (simulasi demo).');
+        const res = await api('sekolah.rpp.review', { id: r.id, keputusan, catatan, rubrik: v, skor: tot, pin }); toast(res.message);
         pergi('/sekolah?tab=telaah');
       } catch (e) { toast(e.message, 'err', 5000); }
     };

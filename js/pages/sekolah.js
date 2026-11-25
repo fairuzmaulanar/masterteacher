@@ -1,7 +1,7 @@
 // Portal Kepala Sekolah: ringkasan sekolah, antrean telaah RPP, guru & kode undangan, dokumen terbit.
 import { ic } from '../core/icons.js';
 import { esc, toast, fmtTgl, salam, salin, waktuRelatif, today, addDays } from '../core/util.js';
-import { S, isDemo } from '../core/state.js';
+import { S } from '../core/state.js';
 import { db } from '../core/store.js';
 import { api } from '../core/api.js';
 import { delegasi, emptyState, segmen, skeleton, avatarWarna } from '../core/ui.js';
@@ -9,26 +9,8 @@ import { DIMENSI, tahunAjaran, semesterSekarang } from '../core/kurikulum.js';
 import { namaKelas, namaMapel, kktpMapel } from '../core/hitung.js';
 import { skorKepatuhan } from './rpp.js';
 
-// ---------- Sumber data: server, atau data lokal (Mode Demo) ----------
-const GURU_DEMO = [['Ahmad Fauzi, S.Pd.', 'Guru Kelas V', 6, 5], ['Sri Wahyuni, S.Pd.', 'Guru Kelas I', 4, 4], ['Dedi Kurniawan, S.Pd.', 'PJOK', 3, 1], ['Nur Aini, S.Pd.I.', 'PAI & BP', 5, 3], ['Yohana Sitorus, S.Pd.', 'Bahasa Inggris', 2, 2]];
-function dashboardLokal() {
-  const rpp = db.all('RPP');
-  const siswa = db.all('Siswa', (s) => String(s.aktif) !== '0');
-  let hadir = 0, catat = 0, tuntas = 0, dinilai = 0;
-  db.all('Absensi', (a) => a.tanggal === today()).forEach((a) => Object.values(a.status || {}).forEach((s) => { catat++; if (s === 'H') hadir++; }));
-  const radar = [];
-  db.all('Asesmen').forEach((a) => { const k = kktpMapel(a.mapel_id); let b = 0, t = 0; Object.values(a.nilai || {}).forEach((v) => { if (v === '' || v === null) return; t++; dinilai++; if (Number(v) >= k) tuntas++; else b++; }); if (t >= 5 && b / t >= 0.25) radar.push({ jenis: 'ketuntasan', guru: S.user.nama, kelas: namaKelas(a.kelas_id), judul: a.nama, bawah: b, total: t }); });
-  const alfa = {}; db.all('Absensi', (a) => a.tanggal >= addDays(today(), -30)).forEach((a) => Object.entries(a.status || {}).forEach(([sid, s]) => { if (s === 'A') alfa[sid] = (alfa[sid] || 0) + 1; }));
-  Object.entries(alfa).forEach(([sid, n]) => { const s = db.get('Siswa', sid); if (n >= 3 && s) radar.push({ jenis: 'alfa', siswa: s.nama, kelas: namaKelas(s.kelas_id), guru: S.user.nama, jumlah: n }); });
-  const dimensi = {}; rpp.forEach((r) => (r.dimensi || []).forEach((d) => { dimensi[d] = (dimensi[d] || 0) + 1; }));
-  const st = (x) => rpp.filter((r) => (r.status || 'draf') === x).length;
-  const saya = { id: 'DEMO', nama: S.user.nama, mapel: S.user.mapel_utama, peran: 'guru', rpp: { total: rpp.length, draf: st('draf') + st('final'), diajukan: st('diajukan'), disetujui: st('disetujui'), revisi: st('revisi') }, kelas: db.all('Kelas').map((k) => k.nama), persenHadir: catat ? Math.round((hadir / catat) * 1000) / 10 : 96.4, persenTuntas: dinilai ? Math.round((tuntas / dinilai) * 1000) / 10 : null, jurnal: db.count('Jurnal'), login_terakhir: new Date().toISOString() };
-  const guru = [saya].concat(GURU_DEMO.map(([n, m, t, ok], i) => ({ id: 'G' + i, nama: n, mapel: m, peran: 'guru', rpp: { total: t, draf: t - ok, diajukan: 0, disetujui: ok, revisi: 0 }, kelas: [], persenHadir: 94 + i, persenTuntas: 84 + i * 2, jurnal: 8 + i, login_terakhir: addDays(today(), -i) })));
-  const tot = guru.reduce((a, g) => a + g.rpp.total, 0);
-  return { ringkas: { guru: guru.length, siswa: siswa.length + 142, kelas: db.count('Kelas') + 5, rppTotal: tot, rppMenunggu: st('diajukan'), rppDisetujui: guru.reduce((a, g) => a + g.rpp.disetujui, 0), guruPunyaRpp: guru.filter((g) => g.rpp.total).length, hadirHariIni: saya.persenHadir, tercatatHariIni: catat, ketuntasan: dinilai ? Math.round((tuntas / dinilai) * 1000) / 10 : null }, guru, radar, dimensi, dihitung: new Date().toISOString() };
-}
+// ---------- Sumber data: server ----------
 export async function ambilRppSekolah(status) {
-  if (isDemo()) return db.all('RPP', (r) => status.split(',').includes(r.status || 'draf')).map((r) => ({ id: r.id, judul: r.judul, materi: r.materi, status: r.status, guru: S.user.nama, kelas: namaKelas(r.kelas_id), mapel: namaMapel(r.mapel_id), jp: r.jp, dimensi: r.dimensi, updated_at: r.updated_at, telaah: r.telaah, _r: r }));
   return (await api('sekolah.rpp.list', { status })).data || [];
 }
 
@@ -38,7 +20,7 @@ export default {
   async render(el, ctx) {
     const tab = ctx.query.tab || 'ringkasan';
     const s = S.sekolah || {};
-    if (!s.id && !isDemo()) { el.innerHTML = `<div class="card">${emptyState({ icon: 'school', title: 'Belum ada profil sekolah', text: 'Buat profil sekolah untuk membuka portal supervisi.', action: '<a class="btn btn-primary" href="#/pengaturan?tab=sekolah">Buat profil sekolah</a>' })}</div>`; return; }
+    if (!s.id) { el.innerHTML = `<div class="card">${emptyState({ icon: 'school', title: 'Belum ada profil sekolah', text: 'Buat profil sekolah untuk membuka portal supervisi.', action: '<a class="btn btn-primary" href="#/pengaturan?tab=sekolah">Buat profil sekolah</a>' })}</div>`; return; }
     el.innerHTML = `<div class="page-h"><div><div class="crumbs"><span>${esc(s.nama)}</span>${ic('chevr', 'ic-s')}<b>Portal Kepala Sekolah</b>${s.npsn ? `<span>· NPSN ${esc(s.npsn)}</span>` : ''}</div><h1>${salam()}, ${esc((S.user.nama || '').split(',')[0])}</h1>
       <p class="sub">Pantauan administrasi kurikulum & kesiapan akademik ${esc(s.nama)} · TA ${tahunAjaran()} · Semester ${semesterSekarang() === 1 ? 'Ganjil' : 'Genap'}</p></div>
       <div class="row"><button class="btn btn-white btn-sm" data-act="segar">${ic('refresh', 'ic-s')}Perbarui</button></div></div>
@@ -60,7 +42,7 @@ export default {
 };
 
 async function ringkasan(el, ctx) {
-  const d = isDemo() ? dashboardLokal() : (await api('sekolah.dashboard', { segar: !!ctx.segar })).data;
+  const d = (await api('sekolah.dashboard', { segar: !!ctx.segar })).data;
   const r = d.ringkas;
   const pRpp = r.guru ? Math.round((r.guruPunyaRpp / r.guru) * 1000) / 10 : 0;
   const antri = await ambilRppSekolah('diajukan');
@@ -79,7 +61,7 @@ async function ringkasan(el, ctx) {
     </div><aside class="col gap-l">
       <div class="card"><h3 style="margin-bottom:.75rem">${ic('alert')} Radar peringatan dini</h3><div class="list">${(d.radar || []).slice(0, 8).map((x) => x.jenis === 'alfa' ? `<div class="li flat small"><span class="badge b-red">Alfa ${x.jumlah}x</span><span class="grow"><b>${esc(x.siswa)}</b> · Kelas ${esc(x.kelas)}<br><span class="tiny muted">Wali kelas/guru: ${esc(x.guru || '-')}</span></span></div>` : `<div class="li flat small"><span class="badge b-qs">${x.bawah}/${x.total}</span><span class="grow"><b>${esc(x.judul)}</b> · Kelas ${esc(x.kelas)}<br><span class="tiny muted">${esc(x.guru)} — ≥25% siswa di bawah KKTP</span></span></div>`).join('') || '<p class="small muted">Tidak ada peringatan.</p>'}</div></div>
       <div class="card"><h3 style="margin-bottom:.75rem">8 Dimensi Profil Lulusan di RPP</h3><div class="col" style="gap:.45rem">${DIMENSI.map((x) => { const n = (d.dimensi || {})[x] || 0; return `<div><div class="row between tiny"><span>${esc(x.replace(' kepada Tuhan YME', ''))}</span><b>${n}</b></div><div class="bar"><i style="width:${(n / maksDim) * 100}%;background:var(--navy)"></i></div></div>`; }).join('')}</div><p class="tiny muted" style="margin-top:.6rem">Dimensi yang jarang disasar dapat menjadi fokus pembinaan.</p></div>
-      <p class="tiny muted">Data dihitung ${waktuRelatif(Date.parse(d.dihitung))}${isDemo() ? ' · sebagian data guru lain adalah contoh demo' : ''}.</p></aside></div>`;
+      <p class="tiny muted">Data dihitung ${waktuRelatif(Date.parse(d.dihitung))}.</p></aside></div>`;
 }
 
 async function antrean(el) {
@@ -93,14 +75,13 @@ async function antrean(el) {
 
 async function daftarGuru(el) {
   const s = S.sekolah || {};
-  const guru = isDemo() ? [{ nama: S.user.nama, email: S.user.email, peran: 'guru', mapel_utama: S.user.mapel_utama, login_terakhir: new Date().toISOString() }].concat(GURU_DEMO.map(([n, m], i) => ({ nama: n, email: n.split(',')[0].toLowerCase().replace(/[^a-z]+/g, '.') + '@contoh.sch.id', peran: 'guru', mapel_utama: m, login_terakhir: addDays(today(), -i) }))) : (await api('sekolah.guru', {})).data;
+  const guru = (await api('sekolah.guru', {})).data;
   el.innerHTML = `<div class="split"><div class="card" style="padding:.75rem"><div class="section-h" style="padding:.25rem .5rem"><h3>Guru terdaftar <span class="badge">${guru.length}</span></h3></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nama</th><th>Email</th><th>Peran</th><th>Login terakhir</th></tr></thead><tbody>${guru.map((g) => `<tr><td><b>${esc(g.nama || '-')}</b><br><span class="tiny muted">${esc(g.mapel_utama || '')}${g.nip ? ' · NIP ' + esc(g.nip) : ''}</span></td><td class="small">${esc(g.email)}</td><td><span class="badge ${g.peran === 'kepsek' ? 'b-navy' : ''}">${esc(g.peran)}</span></td><td class="small">${g.login_terakhir ? fmtTgl(g.login_terakhir, 'pendek') : '-'}</td></tr>`).join('')}</tbody></table></div></div>
     <aside class="card col gap-l"><h3>Undang guru</h3><p class="small muted">Bagikan kode berikut. Guru memasukkannya saat pertama kali masuk (atau di Pengaturan → Sekolah).</p><div class="row"><span class="kpi-v" style="letter-spacing:.25em">${esc(s.kode_undangan || '—')}</span>${s.kode_undangan ? `<button class="btn btn-white btn-sm" data-act="salin" data-v="${esc(s.kode_undangan)}">${ic('copy', 'ic-s')}Salin</button>` : ''}</div>
       ${s.kode_undangan ? `<a class="btn btn-green btn-sm" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`Bapak/Ibu guru ${s.nama}, silakan bergabung di Master Teacher Planner: ${location.origin + location.pathname} — kode undangan sekolah: ${s.kode_undangan}`)}">${ic('send', 'ic-s')}Bagikan lewat WhatsApp</a>` : ''}</aside></div>`;
 }
 
 async function dokumen(el) {
-  if (isDemo()) { el.innerHTML = `<div class="card">${emptyState({ icon: 'qr', title: 'Dokumen ber-QR tersedia di mode cloud', text: 'RPP yang disetujui, rekap presensi, leger, dan jurnal yang diterbitkan guru akan tercantum di sini lengkap dengan nomor & kode verifikasi.' })}</div>`; return; }
   const r = await api('doc.list', { sekolah: true });
   const list = r.data || [];
   el.innerHTML = list.length ? `<div class="card" style="padding:.75rem"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nomor</th><th>Jenis</th><th>Judul</th><th>Penerbit</th><th>Status</th><th>Verifikasi</th></tr></thead><tbody>${list.map((d) => `<tr><td class="small"><b>${esc(d.nomor)}</b></td><td class="small">${esc(d.jenisLabel)}</td><td class="small">${esc(d.judul)}</td><td class="small">${esc(d.penerbit)}</td><td><span class="badge ${d.status === 'TERBIT' ? 'b-gr' : d.status === 'DITARIK' ? 'b-red' : 'b-mt'}">${esc(d.status.replace('_', ' '))}</span></td><td><a class="btn btn-ghost btn-xs" href="#/verifikasi/${esc(d.kode)}">${ic('qr', 'ic-s')}${esc(d.kode.slice(0, 6))}…</a></td></tr>`).join('')}</tbody></table></div></div>` : `<div class="card">${emptyState({ icon: 'qr', title: 'Belum ada dokumen terbit' })}</div>`;

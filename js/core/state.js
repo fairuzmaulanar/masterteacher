@@ -1,5 +1,5 @@
 // Status aplikasi global (sesi, profil, preferensi tampilan).
-export const APP_VERSION = '2.0.0';
+export const APP_VERSION = '2.0.1';
 
 const PREF_KEY = 'mtp_prefs';
 const SES_KEY = 'mtp_sesi';

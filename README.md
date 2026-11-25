@@ -37,7 +37,7 @@ icons/                ikon aplikasi
 
 ## Mode Demo
 
-Tanpa `GAS_URL` (atau tombol **Coba Mode Demo**), aplikasi berjalan sepenuhnya di perangkat dengan data contoh — termasuk tampilan kepala sekolah (tombol *Lihat sebagai kepala sekolah*).
+Tanpa `GAS_URL` (atau tombol **Coba Mode Demo**), aplikasi berjalan sepenuhnya di perangkat sebagai akun guru dengan data contoh lengkap (2 kelas, 55 siswa, RPP, bank soal, nilai, presensi, jurnal, kalender, komunikasi wali, dan dokumen ber-QR). Telaah RPP oleh kepala sekolah disimulasikan otomatis beberapa detik setelah RPP diajukan.
 
 ## Rilis pembaruan
 

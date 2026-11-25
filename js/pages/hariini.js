@@ -40,7 +40,7 @@ export default {
     el.innerHTML = `
     <div class="page-h">
       <div>
-        <div class="row row-wrap small muted" style="gap:.4rem;margin-bottom:.35rem"><span class="badge b-navy">${esc(jamSekarang())} WIB</span>${S.sekolah ? `<span>${esc(S.sekolah.nama)}</span>` : ''}${k ? `<span>· Kelas ${esc(k.nama)}</span>` : ''}<span>· TA ${tahunAjaran()}</span></div>
+        <div class="row small muted" style="gap:.5rem;margin-bottom:.35rem;align-items:center"><span class="badge b-navy" style="flex-shrink:0">${esc(jamSekarang())} WIB</span><span style="min-width:0">${[S.sekolah ? esc(S.sekolah.nama) : '', k ? 'Kelas ' + esc(k.nama) : '', 'TA ' + tahunAjaran()].filter(Boolean).join(' · ')}</span></div>
         <h1>${salam()}, ${esc(sapaan)}.</h1>
         <p class="sub">${fmtTgl(t)} · Anda memiliki <b>${jadwal.length} jadwal mengajar</b> dan <b>${totalKoreksi} berkas koreksi</b> hari ini.</p>
       </div>
@@ -96,7 +96,7 @@ function kartuJadwal(j, now, t) {
   const sudahAbsen = !!db.get('Absensi', `A-${j.kelas_id}-${t}`);
   const label = status === 'now' ? `<span class="badge b-yel"><span class="dot pulse"></span> Sedang berlangsung</span>` : status === 'next' ? '<span class="badge b-mt">Akan datang</span>' : '<span class="badge b-draf">Selesai</span>';
   const sisa = status === 'now' ? ` (${selesai - now} menit lagi)` : status === 'next' && mulai - now < 120 ? ` (mulai ${mulai - now} menit lagi)` : '';
-  return `<div class="card timeline-card ${status === 'now' ? 'now' : ''}" style="${status === 'done' ? 'opacity:.75' : ''}">
+  return `<div class="card timeline-card ${status === 'now' ? 'now' : ''}" style="${status === 'done' ? 'opacity:.85' : ''}">
     <div class="row between row-wrap"><div class="row row-wrap">${label}<span class="small bold" style="color:var(--navy)">${esc(j.mulai)} – ${esc(j.selesai)} WIB${sisa}</span></div><span class="small muted">${ic('school', 'ic-s')} ${esc(j.ruang || 'Kelas ' + namaKelas(j.kelas_id))}</span></div>
     <h3 style="margin:.5rem 0 .2rem">${esc(m.nama || '-')} · Kelas ${esc(namaKelas(j.kelas_id))}</h3>
     <p class="small muted">${rpp ? `Topik: ${esc(rpp.judul || rpp.materi)}` : 'Belum ada RPP untuk pertemuan ini'}</p>

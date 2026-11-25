@@ -85,6 +85,9 @@ async function mulai() {
   konfigurasiRouter({ beforeShell: renderShell, onNav: tandaiNav });
   const ada = muatSesi();
   if (ada && S.mode === 'demo') {
+    // Mode demo khusus akun guru
+    S.user = Object.assign({}, DEMO_USER, { nama: (S.user && S.user.nama) || DEMO_USER.nama });
+    simpanSesi();
     await db.open('demo');
     db.lokalSaja = true;
     if (!db.count('Kelas')) semaiDemo();

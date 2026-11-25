@@ -84,7 +84,7 @@ function tabPresensi(el, k, siswa, st) {
   if (st.cari) inp.oninput();
 }
 function ringkasHtml(c, n) {
-  return [['H', 'Hadir', 'var(--gr-bg)', 'var(--gr)'], ['S', 'Sakit', '#DBEAFE', '#1D4ED8'], ['I', 'Izin', 'var(--qs-bg)', 'var(--qs)'], ['A', 'Alfa', 'var(--red-bg)', 'var(--red)']]
+  return [['H', 'Hadir', 'var(--gr-bg)', 'var(--gr)'], ['S', 'Sakit', 'var(--sk-bg)', 'var(--sk)'], ['I', 'Izin', 'var(--qs-bg)', 'var(--qs)'], ['A', 'Alfa', 'var(--red-bg)', 'var(--red)']]
     .map(([k, l, bg, fg]) => `<div style="background:${bg};color:${fg};border-radius:14px;padding:.55rem .75rem"><div class="tiny bold">${l}</div><b style="font-size:1.25rem">${c[k]}</b>${k === 'H' ? `<span class="tiny"> / ${n}${c.kosong ? ` · ${c.kosong} belum` : ''}</span>` : ''}</div>`).join('');
 }
 function barisAbsen(s, a, i) {
@@ -156,7 +156,7 @@ function tabSiswa(el, k, siswa, st) {
   el.innerHTML = `<div class="split-8">
     <div class="card"><div class="section-h"><h3>${ic('users')}Daftar Siswa <span class="badge">${siswa.length}</span></h3>
       <div class="row"><button class="btn btn-white btn-sm" data-act="impor">${ic('upload', 'ic-s')}Impor</button><button class="btn btn-dark btn-sm" data-act="siswa-baru">${ic('plus', 'ic-s')}Tambah</button></div></div>
-      ${siswa.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>No</th><th>Nama</th><th class="hide-m">NISN</th><th>L/P</th><th class="hide-m">Wali</th><th>WA wali</th><th></th></tr></thead><tbody>
+      ${siswa.length ? `<div class="tbl-wrap"><table class="tbl stack s2"><thead><tr><th>No</th><th>Nama</th><th class="hide-m">NISN</th><th>L/P</th><th class="hide-m">Wali</th><th>WA wali</th><th></th></tr></thead><tbody>
       ${siswa.map((s, i) => `<tr><td class="num">${esc(s.no || i + 1)}</td><td><b>${esc(s.nama)}</b>${s.kebutuhan ? `<br><span class="tiny muted">${esc(s.kebutuhan)}</span>` : ''}</td><td class="hide-m">${esc(s.nisn || '-')}</td><td>${esc(s.jk || '-')}</td><td class="hide-m">${esc(s.nama_wali || '-')}</td><td>${s.hp_wali ? esc(s.hp_wali) : '<span class="badge b-qs">kosong</span>'}</td>
         <td style="white-space:nowrap"><button class="btn btn-ghost btn-xs" data-act="profil" data-id="${s.id}">Profil</button><button class="btn btn-ghost btn-xs" data-act="ubah-siswa" data-id="${s.id}" aria-label="Ubah ${esc(s.nama)}">${ic('edit', 'ic-s')}</button></td></tr>`).join('')}
       </tbody></table></div>` : emptyState({ icon: 'users', title: 'Belum ada siswa', text: 'Impor dari Excel/Dapodik: salin kolom nama (dan NISN, HP wali bila ada), lalu tempel.' })}
@@ -248,7 +248,7 @@ function tabCatatan(el, k, siswa) {
   const nama = {}; siswa.forEach((s) => { nama[s.id] = s.nama; });
   const list = db.all('Catatan', (c) => c.kelas_id === k.id && !String(c.jenis).startsWith('rapor')).sort((a, b) => String(b.tanggal).localeCompare(String(a.tanggal)));
   el.innerHTML = `<div class="card"><div class="section-h"><h3>${ic('note')}Catatan Anekdot</h3><button class="btn btn-dark btn-sm" data-act="catatan-baru">${ic('plus', 'ic-s')}Catatan baru</button></div>
-    <div class="list">${list.map((c) => `<div class="li flat"><span class="badge ${c.jenis === 'prestasi' ? 'b-gr' : c.jenis === 'perilaku' ? 'b-qs' : 'b-mt'}">${esc(KET_JENIS[c.jenis] || c.jenis)}</span><span class="grow"><b>${esc(nama[c.siswa_id] || '-')}</b> <span class="tiny muted">· ${fmtTgl(c.tanggal, 'pendek')}</span><br><span class="small">${esc(c.isi)}</span></span><button class="btn btn-ghost btn-icon btn-xs" data-act="hapus-catatan" data-id="${c.id}" aria-label="Hapus catatan">${ic('trash', 'ic-s')}</button></div>`).join('') || emptyState({ icon: 'note', title: 'Belum ada catatan', text: 'Catat perkembangan perilaku, prestasi, atau kebutuhan belajar siswa untuk bahan rapor dan komunikasi dengan wali.' })}</div></div>`;
+    <div class="list">${list.map((c) => `<div class="li flat anek"><span class="badge ${c.jenis === 'prestasi' ? 'b-gr' : c.jenis === 'perilaku' ? 'b-qs' : 'b-mt'}">${esc(KET_JENIS[c.jenis] || c.jenis)}</span><span class="grow"><b>${esc(nama[c.siswa_id] || '-')}</b> <span class="tiny muted">· ${fmtTgl(c.tanggal, 'pendek')}</span><br><span class="small">${esc(c.isi)}</span></span><button class="btn btn-ghost btn-icon btn-xs" data-act="hapus-catatan" data-id="${c.id}" aria-label="Hapus catatan">${ic('trash', 'ic-s')}</button></div>`).join('') || emptyState({ icon: 'note', title: 'Belum ada catatan', text: 'Catat perkembangan perilaku, prestasi, atau kebutuhan belajar siswa untuk bahan rapor dan komunikasi dengan wali.' })}</div></div>`;
 }
 async function dialogCatatan(s, kelasId) {
   const siswa = s ? [s] : siswaKelas(kelasId);

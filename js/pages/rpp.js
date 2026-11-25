@@ -11,6 +11,7 @@ import { jalankanAi } from '../core/ai.js';
 import { kopHtml, ttdHtml, cetak, eksporWord, verifHtml, dokUntuk, simpanDokCache, ttdElektronik } from '../core/dokumen.js';
 import { pergi } from '../core/router.js';
 import { namaKelas, namaMapel } from '../core/hitung.js';
+import { demoTerbitkan, demoSahkan } from '../core/demo.js';
 
 export const TAHAP = [['awal', 'Kegiatan Awal', 'Berkesadaran'], ['memahami', 'Memahami', 'Bermakna'], ['mengaplikasi', 'Mengaplikasi', 'Bermakna'], ['merefleksi', 'Merefleksi', 'Berkesadaran'], ['penutup', 'Penutup', 'Menggembirakan']];
 // Dukungan contenteditable="plaintext-only" (fallback ke "true" untuk peramban lama)
@@ -194,7 +195,7 @@ function editor(el, ctx, r) {
     </article>
 
     <aside class="col gap-l no-print" style="position:sticky;top:80px">
-      <div class="card"><div class="row between"><b>Kepatuhan standar</b><span class="kpi-v" style="font-size:1.5rem;color:${skor >= 90 ? 'var(--green)' : skor >= 70 ? 'var(--amber)' : 'var(--red)'}">${skor}%</span></div>
+      <div class="card"><div class="row between"><b>Kepatuhan standar</b><span class="kpi-v" style="font-size:1.5rem;color:${skor >= 90 ? 'var(--gr)' : skor >= 70 ? 'var(--qs)' : 'var(--red)'}">${skor}%</span></div>
         <div class="bar" style="margin:.5rem 0 .75rem"><i style="width:${skor}%;background:${skor >= 90 ? 'var(--green)' : skor >= 70 ? 'var(--amber)' : '#DC2626'}"></i></div>
         <div class="col" style="gap:.3rem">${cek.map(([l, ok]) => `<div class="row small" style="gap:.4rem;align-items:flex-start;color:${ok ? 'var(--text)' : 'var(--muted)'}">${ic(ok ? 'checkc' : 'alert', 'ic-s')}<span>${esc(l)}</span></div>`).join('')}</div></div>
       <div class="card col"><b>Lampiran & tindak lanjut</b>
@@ -302,9 +303,17 @@ async function dialogEkspor(r) {
 }
 async function ajukan(r, skor) {
   if (isDemo()) {
-    db.put('RPP', r.id, { status: 'diajukan' });
-    toast('Mode demo: RPP diajukan. Kepala sekolah demo menelaah dalam beberapa detik — atau ketuk "Lihat sebagai kepala sekolah" untuk menelaahnya sendiri.', 'info', 5000);
-    setTimeout(() => (S.user.peran !== 'kepsek' && (db.get('RPP', r.id) || {}).status === 'diajukan') && db.put('RPP', r.id, { status: 'disetujui', telaah: { keputusan: 'disetujui', catatan: 'RPP lengkap dan kontekstual. Disetujui (simulasi demo).', oleh: (S.sekolah || {}).kepsek_nama, waktu: new Date().toISOString() } }), 4000);
+    const isi = r.isi && r.isi._draf ? Object.assign({}, r.isi, { _draf: '' }) : r.isi;
+    const d = demoTerbitkan({ jenis: 'RPP', ref_id: r.id, judul: r.judul, butuh_ttd: true });
+    db.put('RPP', r.id, { status: 'diajukan', isi, dok_kode: d.kode });
+    toast('RPP diajukan. Kepala sekolah menerima pemberitahuan (mode demo: hasil telaah tiba dalam beberapa detik).', 'info', 5000);
+    setTimeout(() => {
+      if ((db.get('RPP', r.id) || {}).status !== 'diajukan') return;
+      const w = new Date().toISOString();
+      demoSahkan(r.id, w);
+      db.put('RPP', r.id, { status: 'disetujui', telaah: { keputusan: 'disetujui', catatan: 'RPP lengkap, kontekstual, dan diferensiasinya jelas. Disetujui.', oleh: (S.sekolah || {}).kepsek_nama, waktu: w, skor: Math.max(80, skor) } });
+      toast('Kepala sekolah menyetujui RPP Anda. Dokumen kini memuat QR verifikasi & tanda tangan elektronik.', 'ok', 5000);
+    }, 4000);
     return;
   }
   if (!S.sekolah || !S.sekolah.id) { toast('Hubungkan akun dengan sekolah terlebih dahulu (Pengaturan → Sekolah).', 'warn', 5000); pergi('/pengaturan?tab=sekolah'); return; }

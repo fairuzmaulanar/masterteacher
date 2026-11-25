@@ -7,8 +7,28 @@ import { api } from '../core/api.js';
 import { sinkron } from '../core/sync.js';
 import { delegasi, kelasList, siswaKelas, emptyState, segmen, skeleton } from '../core/ui.js';
 import { jalankanAi } from '../core/ai.js';
+import { demoKom } from '../core/demo.js';
 
-const cloud = () => S.mode === 'cloud' && adaServer();
+// Mode Demo memakai simulasi data server (kontak, riwayat, pengaturan) agar semua tab terisi seperti akun sungguhan.
+const cloud = () => isDemo() || (S.mode === 'cloud' && adaServer());
+const LABEL_EVENT = { ABSEN_TIDAK_HADIR: 'Kabar ketidakhadiran', ALFA_BERULANG: 'Peringatan alfa berulang', PENGUMUMAN: 'Pengumuman', RPP_DIAJUKAN: 'RPP diajukan', RPP_DITELAAH: 'Hasil telaah RPP', TES: 'Uji kirim', TEST: 'Uji kirim' };
+const sink = () => (isDemo() ? null : sinkron());
+async function srv(action, data) {
+  if (!isDemo()) return api(action, data);
+  switch (action) {
+    case 'crm.list': return { data: demoKom.kontak() };
+    case 'crm.validate': { const n = demoKom.cekWa(); return { message: n ? `${n} nomor diperiksa — semuanya terdaftar di WhatsApp.` : 'Semua nomor sudah diperiksa sebelumnya.' }; }
+    case 'crm.update': demoKom.optOut(data.KontakID, data.OptOut); return { message: '' };
+    case 'notif.blast': { const n = demoKom.kirim(data); return { message: `Pengumuman masuk antrean: ${n} wali menerima pesan secara bertahap.` }; }
+    case 'notif.blast.list': return { data: demoKom.riwayat().blast };
+    case 'notif.queue': return { data: demoKom.riwayat().antrean };
+    case 'notif.blast.stop': return { message: 'Pengiriman dihentikan.' };
+    case 'notif.settings': return { data: demoKom.atur() };
+    case 'notif.settings.save': demoKom.simpanAtur(data); return { message: 'Pilihan notifikasi disimpan.' };
+    case 'notif.test': return { message: data.kanal === 'WA' ? `Pesan uji WhatsApp terkirim ke ${(S.user && S.user.wa) || 'nomor Anda'}.` : `Email uji terkirim ke ${(S.user && S.user.email) || 'email Anda'}.` };
+    default: return { data: null, message: '' };
+  }
+}
 
 export default {
   title: 'Komunikasi Wali',
@@ -21,14 +41,14 @@ export default {
     const isi = el.querySelector('#isi');
     delegasi(el, {
       tab: (b) => { st.tab = b.dataset.tab; ctx.rerender(); },
-      'cek-wa': async (b) => { b.disabled = true; try { await sinkron(); const r = await api('crm.validate', {}); toast(r.message); ctx.rerender(); } catch (e) { toast(e.message, 'err'); b.disabled = false; } },
-      optout: async (b) => { try { await api('crm.update', { KontakID: b.dataset.id, OptOut: b.dataset.v }); toast(b.dataset.v === 'YA' ? 'Kontak tidak akan menerima pengumuman massal.' : 'Kontak kembali menerima pengumuman.'); ctx.rerender(); } catch (e) { toast(e.message, 'err'); } },
+      'cek-wa': async (b) => { b.disabled = true; try { await sink(); const r = await srv('crm.validate', {}); toast(r.message); ctx.rerender(); } catch (e) { toast(e.message, 'err'); b.disabled = false; } },
+      optout: async (b) => { try { await srv('crm.update', { KontakID: b.dataset.id, OptOut: b.dataset.v }); toast(b.dataset.v === 'YA' ? 'Kontak tidak akan menerima pengumuman massal.' : 'Kontak kembali menerima pengumuman.'); ctx.rerender(); } catch (e) { toast(e.message, 'err'); } },
       'pilih-kelas': (b) => { const id = b.dataset.id; st.kelas = st.kelas.includes(id) ? st.kelas.filter((x) => x !== id) : st.kelas.concat(id); b.setAttribute('aria-pressed', st.kelas.includes(id)); },
       'bantu-tulis': (b) => bantuTulis(b, el),
       kirim: () => kirim(el, st, ctx),
-      'stop-blast': async (b) => { if (!(await konfirmasi('Hentikan pengiriman pesan yang masih antre?', { bahaya: true, ya: 'Hentikan' }))) return; try { const r = await api('notif.blast.stop', { blastId: b.dataset.id }); toast(r.message); ctx.rerender(); } catch (e) { toast(e.message, 'err'); } },
+      'stop-blast': async (b) => { if (!(await konfirmasi('Hentikan pengiriman pesan yang masih antre?', { bahaya: true, ya: 'Hentikan' }))) return; try { const r = await srv('notif.blast.stop', { blastId: b.dataset.id }); toast(r.message); ctx.rerender(); } catch (e) { toast(e.message, 'err'); } },
       'simpan-atur': () => simpanAtur(el),
-      tes: async (b) => { try { const r = await api('notif.test', { kanal: b.dataset.k }); toast(r.message); } catch (e) { toast(e.message, 'err'); } }
+      tes: async (b) => { try { const r = await srv('notif.test', { kanal: b.dataset.k }); toast(r.message); } catch (e) { toast(e.message, 'err'); } }
     });
     try {
       if (st.tab === 'kontak') await tabKontak(isi);
@@ -42,16 +62,16 @@ export default {
 async function tabKontak(el) {
   if (!cloud()) {
     const rows = kelasList().flatMap((k) => siswaKelas(k.id).map((s) => ({ s, k })));
-    el.innerHTML = rows.length ? `<div class="card" style="padding:.75rem"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Siswa</th><th>Kelas</th><th>Wali</th><th>WhatsApp</th><th></th></tr></thead><tbody>${rows.map(({ s, k }) => `<tr><td><b>${esc(s.nama)}</b></td><td>${esc(k.nama)}</td><td>${esc(s.nama_wali || '-')}</td><td>${esc(s.hp_wali || '-')}</td><td>${s.hp_wali ? `<a class="btn btn-green btn-xs" target="_blank" rel="noopener" href="${waLink(s.hp_wali, `Yth. Bapak/Ibu wali ${s.nama}, `)}">${ic('send', 'ic-s')}Chat</a>` : ''}</td></tr>`).join('')}</tbody></table></div></div>` : `<div class="card">${emptyState({ icon: 'phone', title: 'Belum ada kontak', text: 'Isi nomor WA wali pada data siswa.' })}</div>`;
+    el.innerHTML = rows.length ? `<div class="card" style="padding:.75rem"><div class="tbl-wrap"><table class="tbl stack"><thead><tr><th>Siswa</th><th>Kelas</th><th>Wali</th><th>WhatsApp</th><th></th></tr></thead><tbody>${rows.map(({ s, k }) => `<tr><td><b>${esc(s.nama)}</b></td><td>${esc(k.nama)}</td><td>${esc(s.nama_wali || '-')}</td><td>${esc(s.hp_wali || '-')}</td><td>${s.hp_wali ? `<a class="btn btn-green btn-xs" target="_blank" rel="noopener" href="${waLink(s.hp_wali, `Yth. Bapak/Ibu wali ${s.nama}, `)}">${ic('send', 'ic-s')}Chat</a>` : ''}</td></tr>`).join('')}</tbody></table></div></div>` : `<div class="card">${emptyState({ icon: 'phone', title: 'Belum ada kontak', text: 'Isi nomor WA wali pada data siswa.' })}</div>`;
     return;
   }
-  await sinkron();
-  const r = await api('crm.list', { sinkron: true });
+  await sink();
+  const r = await srv('crm.list', { sinkron: true });
   const list = r.data || [];
   const n = { ok: list.filter((k) => k.StatusWA === 'Terdaftar').length, x: list.filter((k) => k.StatusWA === 'Tidak Terdaftar').length, kosong: list.filter((k) => !k.NoWA).length, off: list.filter((k) => String(k.OptOut).toUpperCase() === 'YA').length };
   el.innerHTML = `<div class="grid g4" style="margin-bottom:1rem">${[['Kontak wali', list.length, ''], ['WA terdaftar', n.ok, 'b-gr'], ['Nomor bermasalah', n.x + n.kosong, 'b-red'], ['Berhenti langganan', n.off, 'b-qs']].map(([l, v, c]) => `<div class="card card-s"><span class="badge ${c}">${l}</span><div class="kpi-v">${v}</div></div>`).join('')}</div>
     <div class="card" style="padding:.75rem"><div class="section-h" style="padding:.25rem .5rem"><h3>Daftar kontak</h3><button class="btn btn-white btn-sm" data-act="cek-wa">${ic('checkc', 'ic-s')}Cek nomor WA (maks 50)</button></div>
-    ${list.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Wali</th><th>Siswa · kelas</th><th>WhatsApp</th><th>Status WA</th><th>Pesan</th><th>Langganan</th></tr></thead><tbody>${list.map((k) => { const off = String(k.OptOut).toUpperCase() === 'YA'; return `<tr><td><b>${esc(k.Nama)}</b>${k.Email ? `<br><span class="tiny muted">${esc(k.Email)}</span>` : ''}</td><td class="small">${esc((k.Info || {}).siswa || '')} · ${esc((k.Info || {}).kelas || '')}</td><td>${esc(k.NoWA || '-')}</td><td>${k.StatusWA ? `<span class="badge ${k.StatusWA === 'Terdaftar' ? 'b-gr' : 'b-red'}">${esc(k.StatusWA)}</span>` : '<span class="tiny muted">belum dicek</span>'}</td><td class="num">${esc(k.JumlahPesan || 0)}</td><td><button class="btn btn-${off ? 'soft-amber' : 'soft-green'} btn-xs" data-act="optout" data-id="${esc(k.KontakID)}" data-v="${off ? 'TIDAK' : 'YA'}">${off ? 'Berhenti' : 'Aktif'}</button></td></tr>`; }).join('')}</tbody></table></div>` : emptyState({ icon: 'phone', title: 'Belum ada kontak wali', text: 'Kontak dibentuk otomatis dari data siswa (nama & HP wali).' })}</div>`;
+    ${list.length ? `<div class="tbl-wrap"><table class="tbl stack"><thead><tr><th>Wali</th><th>Siswa · kelas</th><th>WhatsApp</th><th>Status WA</th><th>Pesan</th><th>Langganan</th></tr></thead><tbody>${list.map((k) => { const off = String(k.OptOut).toUpperCase() === 'YA'; return `<tr><td><b>${esc(k.Nama)}</b>${k.Email ? `<br><span class="tiny muted">${esc(k.Email)}</span>` : ''}</td><td class="small">${esc((k.Info || {}).siswa || '')} · ${esc((k.Info || {}).kelas || '')}</td><td>${esc(k.NoWA || '-')}</td><td>${k.StatusWA ? `<span class="badge ${k.StatusWA === 'Terdaftar' ? 'b-gr' : 'b-red'}">${esc(k.StatusWA)}</span>` : '<span class="tiny muted">belum dicek</span>'}</td><td class="num">${esc(k.JumlahPesan || 0)}</td><td><button class="btn btn-${off ? 'soft-amber' : 'soft-green'} btn-xs" data-act="optout" data-id="${esc(k.KontakID)}" data-v="${off ? 'TIDAK' : 'YA'}">${off ? 'Berhenti' : 'Aktif'}</button></td></tr>`; }).join('')}</tbody></table></div>` : emptyState({ icon: 'phone', title: 'Belum ada kontak wali', text: 'Kontak dibentuk otomatis dari data siswa (nama & HP wali).' })}</div>`;
 }
 
 function tabUmum(el, st) {
@@ -78,7 +98,7 @@ async function kirim(el, st, ctx) {
   if (pesan.length < 5) { toast('Isi pesan terlalu pendek.', 'err'); return; }
   if (cloud()) {
     if (!(await konfirmasi(`Kirim pengumuman ke wali ${st.kelas.length ? st.kelas.length + ' kelas terpilih' : 'semua kelas'}? Pesan masuk antrean dan terkirim bertahap.`, { ya: 'Kirim' }))) return;
-    try { await sinkron(); const r = await api('notif.blast', { judul, pesan, kelas_ids: st.kelas }); toast(r.message, 'ok', 5000); st.tab = 'riwayat'; ctx.rerender(); } catch (e) { toast(e.message, 'err', 5000); }
+    try { await sink(); const r = await srv('notif.blast', { judul, pesan, kelas_ids: st.kelas }); toast(r.message, 'ok', 5000); st.tab = 'riwayat'; ctx.rerender(); } catch (e) { toast(e.message, 'err', 5000); }
     return;
   }
   const kelas = st.kelas.length ? st.kelas : kelasList().map((k) => k.id);
@@ -89,14 +109,14 @@ async function kirim(el, st, ctx) {
 
 async function tabRiwayat(el) {
   if (!cloud()) { el.innerHTML = `<div class="card">${emptyState({ icon: 'history', title: 'Riwayat hanya tersedia di mode cloud', text: 'Pesan manual dari WhatsApp tidak tercatat di aplikasi.' })}</div>`; return; }
-  const [b, q] = await Promise.all([api('notif.blast.list', {}), api('notif.queue', {})]);
+  const [b, q] = await Promise.all([srv('notif.blast.list', {}), srv('notif.queue', {})]);
   el.innerHTML = `<div class="grid g2"><div class="card"><h3 style="margin-bottom:.75rem">Pengumuman massal</h3><div class="list">${(b.data || []).map((x) => { const tot = Number(x.Total) || 0, ok = Number(x.Terkirim) || 0, g = Number(x.Gagal) || 0; return `<div class="li flat" style="flex-direction:column;align-items:stretch"><div class="row between"><b>${esc(x.Judul)}</b><span class="badge ${x.Status === 'Selesai' ? 'b-gr' : x.Status === 'Dihentikan' ? 'b-red' : 'b-mt'}">${esc(x.Status)}</span></div><span class="tiny muted">${fmtTgl(x.Tanggal, 'pendek')} · ${ok}/${tot} terkirim${g ? ` · ${g} gagal` : ''}</span><div class="bar"><i style="width:${tot ? ((ok + g) / tot) * 100 : 0}%"></i></div>${x.Status === 'Berjalan' ? `<button class="btn btn-ghost btn-xs" data-act="stop-blast" data-id="${esc(x.BlastID)}" style="align-self:flex-end;color:var(--red)">Hentikan</button>` : ''}</div>`; }).join('') || '<p class="small muted">Belum ada pengumuman.</p>'}</div></div>
-    <div class="card"><h3 style="margin-bottom:.75rem">100 pesan terakhir</h3><div class="list" style="max-height:520px;overflow:auto">${(q.data || []).map((x) => `<div class="li flat small"><span class="badge">${esc(x.kanal)}</span><span class="grow"><b>${esc(x.nama || x.tujuan)}</b> <span class="tiny muted">${esc(x.tujuan)}</span><br><span class="tiny muted">${esc(x.event)} · ${x.dikirim ? fmtTgl(x.dikirim, 'pendek') : x.dibuat ? fmtTgl(x.dibuat, 'pendek') : ''}</span></span><span class="badge ${x.status === 'Terkirim' ? 'b-gr' : x.status === 'Gagal' ? 'b-red' : x.status === 'Batal' ? 'b-draf' : 'b-mt'}">${esc(x.status)}</span></div>`).join('') || '<p class="small muted">Belum ada pesan.</p>'}</div></div></div>`;
+    <div class="card"><h3 style="margin-bottom:.75rem">100 pesan terakhir</h3><div class="list" style="max-height:520px;overflow:auto">${(q.data || []).map((x) => `<div class="li flat small"><span class="badge">${esc(x.kanal)}</span><span class="grow"><b>${esc(x.nama || x.tujuan)}</b> <span class="tiny muted">${esc(x.tujuan)}</span><br><span class="tiny muted">${esc(LABEL_EVENT[x.event] || x.event)} · ${x.dikirim ? fmtTgl(x.dikirim, 'pendek') : x.dibuat ? fmtTgl(x.dibuat, 'pendek') : ''}</span></span><span class="badge ${x.status === 'Terkirim' ? 'b-gr' : x.status === 'Gagal' ? 'b-red' : x.status === 'Batal' ? 'b-draf' : 'b-mt'}">${esc(x.status)}</span></div>`).join('') || '<p class="small muted">Belum ada pesan.</p>'}</div></div></div>`;
 }
 
 async function tabAtur(el) {
   if (!cloud()) { el.innerHTML = `<div class="card">${emptyState({ icon: 'bell', title: 'Notifikasi otomatis membutuhkan server', text: 'Hubungkan aplikasi ke Google Apps Script agar wali menerima kabar otomatis saat anak tidak hadir.' })}</div>`; return; }
-  const r = await api('notif.settings', {});
+  const r = await srv('notif.settings', {});
   const g = r.data.global;
   el.innerHTML = `<div class="split"><div class="card col gap-l"><h3>Kejadian yang dikirim otomatis</h3>${r.data.events.map((e) => `<label class="li flat switch" style="align-items:flex-start;gap:.75rem"><input type="checkbox" data-ev="${esc(e.kode)}" ${e.aktifSaya ? 'checked' : ''} ${!e.wa && !e.email ? 'disabled' : ''}><span class="grow"><b>${esc(e.label)}</b><br><span class="tiny muted">${[e.wa ? 'WhatsApp' : '', e.email ? 'Email' : ''].filter(Boolean).join(' + ') || 'dimatikan admin'}</span><details class="tiny" style="margin-top:.25rem"><summary class="muted" style="cursor:pointer">Lihat templat</summary><pre style="white-space:pre-wrap;font-family:inherit">${esc(e.pesan)}</pre></details></span></label>`).join('')}
     <button class="btn btn-dark" data-act="simpan-atur" style="align-self:flex-start">${ic('check', 'ic-s')}Simpan pilihan</button></div>
@@ -104,9 +124,9 @@ async function tabAtur(el) {
       <div class="li flat"><span class="grow"><b>WhatsApp (Fonnte)</b><br><span class="tiny muted">${g.fonnte ? 'Token terpasang' : 'Token belum diisi admin'}</span></span><span class="badge ${g.wa ? 'b-gr' : 'b-draf'}">${g.wa ? 'Aktif' : 'Nonaktif'}</span></div>
       <div class="li flat"><span class="grow"><b>Email</b><br><span class="tiny muted">via akun Google sekolah</span></span><span class="badge ${g.email ? 'b-gr' : 'b-draf'}">${g.email ? 'Aktif' : 'Nonaktif'}</span></div>
       <div class="row"><button class="btn btn-white btn-sm" data-act="tes" data-k="WA" ${g.wa ? '' : 'disabled'}>Tes WA ke saya</button><button class="btn btn-white btn-sm" data-act="tes" data-k="EMAIL" ${g.email ? '' : 'disabled'}>Tes email</button></div>
-      <p class="tiny muted">Saklar utama kanal diatur admin. Pilihan di kiri hanya berlaku untuk kelas Anda.</p></aside></div>`;
+      <p class="tiny muted">Saklar utama kanal diatur admin. Pilihan kejadian otomatis hanya berlaku untuk kelas Anda.</p></aside></div>`;
 }
 async function simpanAtur(el) {
   const d = {}; el.querySelectorAll('[data-ev]').forEach((c) => { d[c.dataset.ev] = c.checked; });
-  try { const r = await api('notif.settings.save', d); toast(r.message); } catch (e) { toast(e.message, 'err'); }
+  try { const r = await srv('notif.settings.save', d); toast(r.message); } catch (e) { toast(e.message, 'err'); }
 }

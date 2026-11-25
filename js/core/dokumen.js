@@ -4,6 +4,7 @@ import { S, isDemo, adaServer } from './state.js';
 import { api } from './api.js';
 import { esc, sha256Hex, unduh, fmtTgl, toast } from './util.js';
 import { qrSvg } from './qr.js';
+import { demoTerbitkan, demoDokUntuk } from './demo.js';
 
 export const urlVerifikasi = (kode) => `${location.origin}${location.pathname}#/verifikasi/${kode}`;
 
@@ -146,7 +147,8 @@ export function eksporCsv(namaFile, baris) {
  * Mengembalikan objek dokumen publik { nomor, kode, status, ... } atau null bila tidak tersedia (demo/offline).
  */
 export async function terbitkan({ jenis, ref_id, judul, isiKanonik, ringkasan = '', butuh_ttd = false }) {
-  if (isDemo() || !adaServer()) { toast('Penerbitan ber-QR membutuhkan akun cloud. Dokumen tetap bisa dicetak tanpa QR.', 'info', 4200); return null; }
+  if (isDemo()) { const d = demoTerbitkan({ jenis, ref_id, judul, butuh_ttd, ringkasan }); toast(butuh_ttd ? 'Dokumen diajukan untuk ditandatangani kepala sekolah.' : `Dokumen terbit dengan nomor ${d.nomor}.`); return d; }
+  if (!adaServer()) { toast('Penerbitan ber-QR membutuhkan akun cloud. Dokumen tetap bisa dicetak tanpa QR.', 'info', 4200); return null; }
   if (!navigator.onLine) { toast('Penerbitan dokumen membutuhkan internet. Coba lagi saat terhubung.', 'warn'); return null; }
   const hash = await sha256Hex(isiKanonik);
   const r = await api('doc.issue', { jenis, ref_id, judul, hash, butuh_ttd, meta: { ringkasan } });
@@ -159,6 +161,7 @@ const DOK_KEY = 'mtp_dok';
 function dokCache() { try { return JSON.parse(localStorage.getItem(DOK_KEY) || '{}'); } catch (e) { return {}; } }
 export function simpanDokCache(dok) { if (!dok || !dok.ref_id && !dok.refId) return; const c = dokCache(); c[dok.ref_id || dok.refId] = dok; try { localStorage.setItem(DOK_KEY, JSON.stringify(c)); } catch (e) { /* penuh */ } }
 export async function dokUntuk(refId, { segar = false } = {}) {
+  if (isDemo()) return demoDokUntuk(refId);
   const c = dokCache();
   if (!segar && c[refId]) return c[refId];
   if (isDemo() || !adaServer() || !navigator.onLine) return c[refId] || null;

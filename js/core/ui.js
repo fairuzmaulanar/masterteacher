@@ -74,7 +74,7 @@ export function renderShell() {
         <a class="avatar" href="#/pengaturan" aria-label="Profil" style="background:#12245B;color:#fff">${esc(initials(S.user && S.user.nama))}</a>
       </header>
       <div class="offline-bar hide" id="offbar">${ic('wifioff', 'ic-s')}Anda sedang offline. Semua perubahan tetap tersimpan di perangkat dan akan disinkronkan otomatis.</div>
-      ${isDemo() ? `<div class="offline-bar" style="background:var(--yellow-soft);color:#7A5600;flex-wrap:wrap">${ic('info', 'ic-s')}<span class="grow"><b>Mode Demo</b><span class="hide-s"> — data contoh hanya di perangkat ini dan direset setiap kali demo dibuka.</span></span><button type="button" class="btn btn-white btn-xs" data-ganti-peran>${S.user && S.user.peran === 'kepsek' ? 'Lihat sebagai guru' : 'Lihat sebagai kepala sekolah'}</button><a href="#/masuk" data-keluar style="font-weight:800">Keluar demo</a></div>` : ''}
+      ${isDemo() ? `<div class="offline-bar" style="background:var(--yellow-soft);color:var(--demo-ink);flex-wrap:wrap">${ic('info', 'ic-s')}<span class="grow"><b>Mode Demo</b><span class="hide-s"> — data contoh hanya di perangkat ini dan direset setiap kali demo dibuka.</span></span><a href="#/masuk" data-keluar style="font-weight:800">Keluar demo</a></div>` : ''}
       <main class="content" id="host"></main>
     </div>
     <div class="bottomnav"><nav aria-label="Navigasi bawah">
@@ -92,7 +92,6 @@ export function renderShell() {
     if (e.target.closest('#syncChip')) { sinkron(); }
     if (e.target.closest('#btnBell')) { pemberitahuan(); }
     if (e.target.closest('[data-keluar]')) { e.preventDefault(); document.dispatchEvent(new CustomEvent('mtp:logout')); }
-    if (e.target.closest('[data-ganti-peran]')) { S.user.peran = S.user.peran === 'kepsek' ? 'guru' : 'kepsek'; const ke = S.user.peran === 'kepsek' ? '#/sekolah' : '#/hari-ini'; document.dispatchEvent(new CustomEvent('mtp:profil')); location.hash = ke; }
   });
   onSync(renderSync);
   document.addEventListener('mtp:net', renderNet);
@@ -127,7 +126,7 @@ function renderNet() {
   const bar = document.getElementById('offbar');
   if (bar) bar.classList.toggle('hide', !off || isDemo());
   const nb = document.getElementById('netbox');
-  if (nb) nb.innerHTML = `<div class="row between"><span class="tiny bold muted">Status Jaringan</span><span class="tiny bold" style="color:${off ? 'var(--amber)' : 'var(--green)'}"><span class="dot"></span> ${off ? 'Offline' : 'Bisa Offline'}</span></div><p class="tiny muted" style="margin-top:2px">${off ? 'Perubahan tersimpan di perangkat.' : 'Perubahan otomatis dicadangkan saat terhubung.'}</p>`;
+  if (nb) nb.innerHTML = `<div class="row between"><span class="tiny bold muted">Status Jaringan</span><span class="tiny bold" style="color:${off ? 'var(--qs)' : 'var(--gr)'}"><span class="dot"></span> ${off ? 'Offline' : 'Bisa Offline'}</span></div><p class="tiny muted" style="margin-top:2px">${off ? 'Perubahan tersimpan di perangkat.' : 'Perubahan otomatis dicadangkan saat terhubung.'}</p>`;
 }
 
 function renderSync(st) {
@@ -281,3 +280,18 @@ export function perluKelas(el) {
 }
 
 export { toast, ic };
+
+// Tabel ber-kelas "stack" tampil sebagai kartu bertumpuk di ponsel: setiap sel diberi label kolom dari thead.
+if (typeof MutationObserver !== 'undefined') {
+  let antre = false;
+  const beriLabel = () => {
+    antre = false;
+    document.querySelectorAll('table.stack').forEach((t) => {
+      const sel = t.querySelectorAll('tbody td:not([data-l])');
+      if (!sel.length) return;
+      const h = Array.from(t.querySelectorAll('thead th'), (th) => th.textContent.trim());
+      sel.forEach((td) => { td.setAttribute('data-l', h[td.cellIndex] || ''); if (td.textContent.trim().length > 36 && !td.querySelector('input,select,button')) td.classList.add('panjang'); });
+    });
+  };
+  new MutationObserver(() => { if (!antre) { antre = true; requestAnimationFrame(beriLabel); } }).observe(document.documentElement, { childList: true, subtree: true });
+}

@@ -1,53 +1,24 @@
 {
   "id": "./",
-  "name": "Master Teacher Planner - Perencana & Asisten Administrasi Guru",
-  "short_name": "TeacherPlanner",
-  "description": "All-in-One Digital Workspace & Asisten Administrasi Guru Profesional Berbasis Kurikulum Merdeka. 100% Offline-First.",
-  "start_url": "./index.html",
+  "name": "Master Teacher Planner",
+  "short_name": "Master Teacher",
+  "description": "Ruang kerja digital guru Indonesia: RPP Pembelajaran Mendalam, presensi, bank soal, buku nilai, dan rapor — bisa offline.",
+  "lang": "id",
+  "start_url": "./#/hari-ini",
   "scope": "./",
   "display": "standalone",
-  "display_override": [
-    "window-controls-overlay",
-    "standalone",
-    "minimal-ui"
-  ],
-  "background_color": "#080d1a",
-  "theme_color": "#059669",
   "orientation": "any",
-  "categories": [
-    "education",
-    "productivity"
-  ],
+  "background_color": "#F7FAFF",
+  "theme_color": "#12245B",
+  "categories": ["education", "productivity"],
   "icons": [
-    {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "./icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Presensi Kelas", "url": "./#/kelas", "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Buat RPP", "url": "./#/rencana/baru", "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Buku Nilai", "url": "./#/nilai", "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

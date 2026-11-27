@@ -6,7 +6,7 @@ Aplikasi terdiri dari dua bagian:
 
 | Bagian | Isi | Tempat |
 |---|---|---|
-| **Backend** (server & database) | 12 berkas `.gs` + `appsscript.json` | Google Apps Script di akun Google Anda (data tersimpan di Google Sheets milik Anda) |
+| **Backend** (server & database) | 13 berkas `.gs` + `appsscript.json` | Google Apps Script di akun Google Anda (data tersimpan di Google Sheets milik Anda) |
 | **Frontend** (tampilan aplikasi) | Isi ZIP `master-teacher-planner.zip` | GitHub Pages (gratis) |
 
 > Tanpa backend pun aplikasi bisa dicoba: buka frontend lalu pilih **Coba Mode Demo**.
@@ -20,7 +20,7 @@ Aplikasi terdiri dari dua bagian:
 3. **Tampilkan berkas manifes:** klik ikon roda gigi **Setelan proyek** (kiri) → centang **Tampilkan file manifes "appsscript.json" di editor**.
 4. Kembali ke **Editor** (ikon `< >`). Buat berkas-berkas berikut dengan tombol **＋ → Skrip**. Ketik namanya **persis** tanpa `.gs` (editor menambahkannya sendiri):
 
-   `Kode`, `Rahasia`, `DB`, `Auth`, `Sync`, `Sekolah`, `DocEngine`, `QR`, `AI`, `Notifikasi`, `Migrasi`, `Setup`
+   `Kode`, `Rahasia`, `DB`, `Auth`, `Sync`, `Sekolah`, `DocEngine`, `QR`, `AI`, `Notifikasi`, `Migrasi`, `Setup`, `DataContoh`
 
    Berkas `Kode.gs` sudah ada sejak awal — cukup ganti isinya.
 5. Buka setiap berkas, **hapus seluruh isinya**, lalu salin-tempel isi berkas dengan nama yang sama yang Anda terima. Lakukan juga untuk `appsscript.json`.
@@ -135,6 +135,12 @@ Tunggu 1–2 menit lalu muat ulang halaman Settings → Pages. Muncul: **Your si
 4. Kepala sekolah: **Pengaturan → Keamanan → PIN tanda tangan** (6 digit) — dipakai saat menyetujui RPP.
 5. Guru lain: login dengan email masing-masing → pada langkah *Sekolah* masukkan **kode undangan**.
 6. **Pasang di HP:** buka alamat aplikasi di Chrome HP → menu ⋮ → **Tambahkan ke layar utama / Instal aplikasi** (iPhone: Safari → Bagikan → *Tambah ke Layar Utama*). Setelah dibuka sekali, aplikasi tetap bisa dipakai tanpa internet.
+7. **(Opsional) Isi database dengan data contoh** — agar semua menu langsung terisi seperti akun yang sudah dipakai berbulan-bulan (2 kelas, 55 siswa, RPP, bank soal, nilai, presensi 40 hari, jurnal, agenda, kontak wali, riwayat pesan, dokumen ber-QR, serta kepala sekolah & 2 guru contoh):
+   - Pastikan Anda **sudah login sekali** ke aplikasi dengan email Anda (langkah 1).
+   - Di editor Apps Script, pilih fungsi **`isiDataContoh`** → **Jalankan**. Tunggu ±1 menit sampai log menampilkan `✅ Data contoh terpasang…` beserta jumlah baris tiap sheet.
+   - Buka aplikasi lalu muat ulang (F5 / tarik layar ke bawah). Data contoh masuk ke akun **admin pertama**; untuk akun lain, isi email di baris `const EMAIL_DATA_CONTOH = '';` di berkas `DataContoh.gs` sebelum menjalankan.
+   - Aman dijalankan ulang (data diperbarui, tidak dobel). Tidak ada WA/email yang terkirim: nomor wali contoh berawalan `0800` dan riwayat antrean sudah berstatus *Terkirim*.
+   - **Sebelum dipakai sungguhan**, jalankan **`hapusDataContoh`** untuk mengosongkan kembali semua data contoh (data asli Anda tidak tersentuh).
 
 ---
 

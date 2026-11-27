@@ -1,7 +1,7 @@
 // Service Worker Master Teacher Planner
 // - Kerangka aplikasi (HTML/CSS/JS/ikon) disimpan di cache → aplikasi terbuka instan & bisa offline.
 // - Permintaan ke Google Apps Script TIDAK PERNAH di-cache (data selalu lewat IndexedDB + sinkron).
-const VERSI = 'mtp-v2.0.1';
+const VERSI = 'mtp-v2.0.2';
 const SHELL = [
   './', './index.html', './manifest.webmanifest', './favicon.svg', './css/app.css', './js/config.js', './js/app.js',
   './js/core/util.js', './js/core/icons.js', './js/core/store.js', './js/core/state.js', './js/core/api.js', './js/core/sync.js',

@@ -56,6 +56,7 @@ export async function muat() {
   if (!r.pub && !loggedIn) { sesiTab.set('mtp_lanjut', raw); pergi('/masuk'); return; }
   if (r.mod === 'masuk' && loggedIn) { pergi('/hari-ini'); return; }
   if (r.roles && !(S.user && r.roles.includes(S.user.peran))) { pergi('/hari-ini'); return; }
+  if (r.mod === 'mulai' && S.user && String(S.user.onboarded) === '1') { pergi('/hari-ini'); return; } // panduan awal sudah selesai
   if (loggedIn && !r.pub && r.mod !== 'mulai' && S.user && String(S.user.onboarded) !== '1' && S.mode !== 'demo' && S.user.id !== 'darurat' && !sesiTab.get('mtp_lewati_mulai')) { pergi('/mulai'); return; }
 
   const m = path.match(r.re);
